@@ -51,21 +51,28 @@ The skills should never automatically change:
 
 If impact is unclear, the agent should document the risk instead of changing the library.
 
-## Install In Claude
+## Download The Skills
 
-Build the ZIP packages:
-
-```bash
-./scripts/build-claude-zips.sh
-```
-
-Upload the ZIP files from:
+For normal use, download the latest ZIP files from GitHub Releases:
 
 ```text
-dist/claude/
+https://github.com/ibaldi/design-token-audit-skills/releases
 ```
 
+Then upload the ZIP files to Claude as custom skills.
+
+## Install In Claude
+
 In Claude, enable Skills and upload each ZIP as a custom skill.
+
+Use the ZIP files from the latest GitHub Release:
+
+```text
+design-token-audit-orchestrator.zip
+token-readonly-scan.zip
+token-semantic-gap-finding.zip
+token-creation-proposal.zip
+```
 
 ## Recommended First Test
 
@@ -91,7 +98,9 @@ Owner for changelog:
 Target baseline:
 ```
 
-## Updating The Skills
+## For Maintainers
+
+This section is for people who want to edit, rebuild, or release the skills.
 
 Edit the relevant `SKILL.md` file under:
 
@@ -99,13 +108,13 @@ Edit the relevant `SKILL.md` file under:
 skills/claude/
 ```
 
-Then rebuild the ZIPs:
+Then rebuild the ZIPs locally:
 
-```bash
+```text
 ./scripts/build-claude-zips.sh
 ```
 
-Commit and push:
+Commit and push the source changes:
 
 ```bash
 git add .
@@ -124,6 +133,8 @@ Use the release script:
 ```
 
 This rebuilds the Claude ZIP packages and creates a GitHub Release with the ZIPs attached as downloadable artifacts.
+
+Use a new semantic version for each public update, for example `v0.1.1` or `v0.2.0`.
 
 ## Repository Status
 
