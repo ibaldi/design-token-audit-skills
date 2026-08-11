@@ -7,9 +7,21 @@ description: Perform a read-only current-state scan of a Figma design token libr
 
 Use this skill to inspect a design token library without changing anything.
 
+Before inspecting Figma, read and follow:
+
+- [references/figma-adapter-contract.md](references/figma-adapter-contract.md) to negotiate capabilities and select a non-blocking read path
+- [references/canonical-figma-token-model.md](references/canonical-figma-token-model.md) to normalize source data before applying audit rules
+- [references/figma-adapter-mappings.md](references/figma-adapter-mappings.md) to map Plugin API, MCP, API, export, or mixed sources
+- [references/figma-execution-contract.md](references/figma-execution-contract.md) for collection, derivation, evidence, and coverage
+- [references/audit-output-contract.md](references/audit-output-contract.md) for the versioned Markdown and JSON outputs
+
 ## Rule
 
 Do not write, rename, delete, create, move, or edit any Figma variable, token, node, changelog row, or reference card.
+
+Do not infer fields the available Figma access cannot expose. Mark them `not observable` and include them in the coverage statement.
+
+Do not run audit rules directly on adapter-specific responses. Normalize and integrity-check the canonical snapshot first, then gate each rule by its required capabilities.
 
 ## Scan Checklist
 
@@ -41,31 +53,23 @@ Report:
 - author and type values
 - reference card or frame status
 
-## Output Format
+## Output
 
-```text
-Library:
-File key:
-Relevant pages:
-Collections:
-Total variables:
-Variables by collection:
-Variables by type:
-Modes:
-Descriptions complete:
-Empty descriptions:
-Missing mode values:
-ALL_SCOPES:
-Naming issues:
-Duplicate names:
-Unresolved aliases:
-Potential orphan candidates:
-Changelog status:
-Reference status:
-Initial risk summary:
-Recommended next pass:
+Produce both required representations from the same evidence:
+
+1. a concise Markdown report
+2. one JSON object with `schema_version: 1.0.0`
+
+Validate that inventory and summary counts are derivable from the captured evidence and findings before delivering the report.
+
+When the JSON is saved as a file, run:
+
+```bash
+python3 scripts/validate_audit_json.py <audit.json>
 ```
+
+Correct every reported error before delivery. If scripts cannot be executed in the current environment, apply the same checks manually and disclose that automated validation was unavailable.
 
 ## Final Response
 
-Clearly state that the scan was read-only and that no changes were made.
+Clearly state that the scan was read-only and that no changes were made. Distinguish observed facts from heuristic findings and unknown external consumer usage.

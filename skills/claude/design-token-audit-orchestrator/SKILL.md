@@ -15,8 +15,8 @@ Approval for one pass does not approve any other pass.
 
 ## Flow
 
-1. Run read-only scan.
-2. Report current state with counts.
+1. Negotiate available Figma read capabilities, select a conforming adapter, and run the read-only scan on a canonical snapshot.
+2. Report current state with counts, inspection method, coverage, and limitations in synchronized Markdown and versioned JSON.
 3. Recommend pass order.
 4. Run one pass at a time.
 5. Preview before any write.
@@ -42,7 +42,7 @@ Approval for one pass does not approve any other pass.
 
 Use these skills when the user asks for a specific pass:
 
-- `token-readonly-scan` for the initial current-state report.
+- `token-readonly-scan` for the initial current-state report and its required Figma execution contract. Do not begin later passes until the scan states what was and was not observable.
 - `token-semantic-gap-finding` for missing semantic token coverage.
 - `token-creation-proposal` for exact token creation proposals after a gap is accepted.
 
@@ -74,5 +74,8 @@ Before every write, provide:
 - planned changelog row
 - planned reference card or frame
 - verification plan
+- source audit ID, scan timestamp, schema version, and coverage
+
+Immediately before applying an approved write, re-read the affected records and stop if they no longer match the approved preview.
 
 Then stop and wait for approval.

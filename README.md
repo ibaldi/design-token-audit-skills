@@ -36,6 +36,14 @@ The first version contains four Claude-ready skills:
 | `token-semantic-gap-finding` | Finds missing semantic token coverage without creating tokens. |
 | `token-creation-proposal` | Turns approved semantic gaps into exact token creation proposals. |
 
+The read-only scan includes a concrete Figma execution contract. It defines the preferred read paths, required collection and variable fields, alias resolution, node-usage evidence, deterministic finding rules, and mandatory coverage reporting. Data that the available Figma access cannot expose must be reported as `not observable`, not inferred.
+
+Every scan produces synchronized Markdown and JSON. The versioned JSON contract provides stable finding fingerprints, explicit evidence and confidence, inventory totals, coverage status, limitations, and machine-comparable summaries for later baseline checks.
+
+The read-only skill includes a dependency-free validator for generated audit JSON artifacts. It checks structural requirements and cross-field consistency before a report is delivered or stored as a baseline.
+
+The scan is not tied to a named Figma plugin. A capability-based adapter contract supports the Figma Plugin API, compatible MCP tools, structured exports, other APIs, and carefully verified mixed sources. Every adapter normalizes its data into the same canonical token snapshot before audit rules run. Missing optional capabilities reduce coverage; missing collection or variable inventory capabilities block the scan.
+
 ## Safety Model
 
 The skills should never automatically change:
