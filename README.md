@@ -125,17 +125,6 @@ Use the release script:
 
 This rebuilds the Claude ZIP packages and creates a GitHub Release with the ZIPs attached as downloadable artifacts.
 
-## Suggested Roadmap
-
-- Add mode cleanup skill
-- Add scope cleanup skill
-- Add changelog alignment skill
-- Add naming cleanup skill
-- Add orphan review skill
-- Add description pass skill
-- Add baseline release skill
-- Add Codex skill variants from the same source structure
-
 ## Repository Status
 
 Initial MVP skill suite for Claude. The repository is intentionally small so the workflow can be tested in a Figma sandbox before more specialized audit passes are added.
