@@ -8,3 +8,4 @@
 - Added semantic gap-finding skill.
 - Added token creation proposal skill.
 - Added build script for Claude ZIP packages.
+- Added release script for publishing ZIP artifacts to GitHub Releases.
