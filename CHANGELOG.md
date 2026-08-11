@@ -1,5 +1,9 @@
 # Changelog
 
+## Unreleased
+
+- Expanded skill trigger descriptions for plugin-independent audits, capability negotiation, canonical snapshots, coverage reporting, and validated outputs.
+
 ## 0.2.0 - 2026-08-11
 
 - Added a concrete Figma read execution contract for token audits.

@@ -1,6 +1,6 @@
 ---
 name: token-readonly-scan
-description: Perform a read-only current-state scan of a Figma design token library. Use when the user asks to inspect collections, modes, token counts, descriptions, scopes, ALL_SCOPES, missing mode values, naming issues, aliases, orphan candidates, changelog structure, reference cards, or baseline readiness. Never make changes in this skill.
+description: Perform a plugin-independent, read-only audit of a Figma design token library using the Figma Plugin API, compatible MCP tools, structured exports, or verified mixed sources. Use when the user wants to inspect collections, modes, variables, aliases, scopes, descriptions, naming, accessibility values, usage evidence, orphan candidates, changelog structure, reference cards, coverage, or baseline readiness. Negotiate capabilities, normalize source data into a canonical snapshot, report unavailable evidence explicitly, and produce synchronized Markdown and validated JSON. Never modify Figma data.
 ---
 
 # Token Read-only Scan

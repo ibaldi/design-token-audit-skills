@@ -1,6 +1,6 @@
 ---
 name: design-token-audit-orchestrator
-description: Run an end-to-end design token audit workflow for Figma design systems. Use when the user wants to audit a token library, create a baseline, evaluate token quality, coordinate multiple audit passes, or safely move from read-only analysis to approved cleanup. Always start read-only, require preview and approval for each write pass, and protect Typography, AX/accessibility values, aliases, modes, orphan candidates, changelog rows, and reference cards.
+description: Run an end-to-end, plugin-independent design token audit workflow for Figma design systems using capability-based adapters and canonical snapshots. Use when the user wants to audit a token library, establish or compare a baseline, evaluate token quality, coordinate multiple audit passes, or safely move from read-only analysis to approved cleanup. Always start read-only, report coverage and limitations, require an exact preview and separate approval for every write pass, detect drift before writing, and protect Typography, accessibility values, aliases, modes, orphan candidates, changelog rows, and reference cards.
 ---
 
 # Design Token Audit Orchestrator
