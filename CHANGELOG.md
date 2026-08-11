@@ -1,6 +1,6 @@
 # Changelog
 
-## Unreleased
+## 0.2.0 - 2026-08-11
 
 - Added a concrete Figma read execution contract for token audits.
 - Added deterministic derivation and alias-resolution rules.
