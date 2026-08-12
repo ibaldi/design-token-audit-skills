@@ -27,7 +27,7 @@ The goal is not only cleanup. The goal is a token library whose intent is readab
 
 ## Skill Suite
 
-The first version contains four Claude-ready skills:
+The current MVP contains four Claude-ready skills:
 
 | Skill | Purpose |
 | --- | --- |
@@ -131,6 +131,20 @@ git push
 ```
 
 The generated ZIP files in `dist/claude/` are ignored by Git. They can be rebuilt locally or attached to a GitHub Release.
+
+## Validation Fixtures
+
+The read-only scan skill includes a minimal valid audit JSON fixture:
+
+```text
+skills/claude/token-readonly-scan/fixtures/minimal-valid-audit.json
+```
+
+Validate it with:
+
+```bash
+python3 skills/claude/token-readonly-scan/scripts/validate_audit_json.py skills/claude/token-readonly-scan/fixtures/minimal-valid-audit.json
+```
 
 ## Creating A GitHub Release
 

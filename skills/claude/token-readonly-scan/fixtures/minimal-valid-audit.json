@@ -1,0 +1,155 @@
+{
+  "schema_version": "1.0.0",
+  "audit_id": "dta-fixture-minimal-valid",
+  "audit_type": "figma_token_readonly_scan",
+  "status": "complete_with_limitations",
+  "read_only": true,
+  "started_at": "2026-08-12T08:00:00Z",
+  "completed_at": "2026-08-12T08:01:00Z",
+  "source": {
+    "file_key": "fixture-file-key",
+    "file_name": "Fixture Token Library",
+    "branch_or_version": null,
+    "pages_requested": [
+      {
+        "id": "1:2",
+        "name": "Foundations"
+      }
+    ],
+    "collections_expected": null,
+    "export_fingerprint": null
+  },
+  "inspection": {
+    "method": "user_supplied_export",
+    "tool_name": "Fixture export",
+    "capabilities": [
+      "local_variables",
+      "local_variable_collections"
+    ],
+    "unavailable_operations": [
+      "document_node_traversal",
+      "external_consumer_search"
+    ]
+  },
+  "coverage": {
+    "collections": {
+      "status": "complete",
+      "observed": 1,
+      "expected": 1
+    },
+    "variables": {
+      "status": "complete",
+      "captured": 2,
+      "failed": 0
+    },
+    "pages": {
+      "status": "not_observable",
+      "fully_traversed_ids": [],
+      "not_traversed_ids": [
+        "1:2"
+      ]
+    },
+    "aliases": {
+      "status": "complete",
+      "unresolved_remote": 0
+    },
+    "external_consumers": {
+      "status": "not_observable",
+      "searched": [],
+      "not_searched": [
+        "consumer Figma files",
+        "code repositories"
+      ]
+    },
+    "unobservable_fields": [
+      "document node usage",
+      "external consumer usage"
+    ],
+    "limitations": [
+      "Fixture does not include page traversal or external consumer evidence."
+    ]
+  },
+  "inventory": {
+    "collections_total": 1,
+    "variables_total": 2,
+    "variables_by_collection": {
+      "Semantic": 2
+    },
+    "variables_by_type": {
+      "COLOR": 2
+    },
+    "modes_by_collection": {
+      "Semantic": [
+        {
+          "id": "ModeID:light",
+          "name": "Light"
+        },
+        {
+          "id": "ModeID:dark",
+          "name": "Dark"
+        }
+      ]
+    },
+    "descriptions": {
+      "complete": 1,
+      "empty": 1
+    },
+    "missing_mode_values": 0,
+    "all_scopes": 1,
+    "unresolved_aliases": 0,
+    "potential_orphan_candidates": 0
+  },
+  "findings": [
+    {
+      "id": "DTA-DESCRIPTION-001",
+      "fingerprint": "empty-description|VariableID:semantic-action-danger",
+      "rule_id": "empty-description",
+      "category": "description",
+      "severity": "low",
+      "confidence": "high",
+      "title": "Semantic/action/danger has an empty description",
+      "status": "open",
+      "targets": [
+        {
+          "kind": "variable",
+          "id": "VariableID:semantic-action-danger",
+          "name": "Semantic/action/danger",
+          "collection_id": "VariableCollectionId:semantic",
+          "mode_id": null,
+          "page_id": null
+        }
+      ],
+      "observed": {
+        "description": ""
+      },
+      "expected": {
+        "description_status": "non_empty"
+      },
+      "evidence": [
+        {
+          "source": "figma_variable_metadata",
+          "detail": "The captured description field is empty after trimming whitespace."
+        }
+      ],
+      "risk": "Design intent is not explicit for future users or AI-supported audits.",
+      "recommendation": "Add a concise usage-oriented description in a separately approved description pass.",
+      "limitations": []
+    }
+  ],
+  "summary": {
+    "findings_total": 1,
+    "by_severity": {
+      "critical": 0,
+      "high": 0,
+      "medium": 0,
+      "low": 1,
+      "info": 0
+    },
+    "by_category": {
+      "description": 1
+    },
+    "holds": 0,
+    "risk_statement": "One low-risk description finding was detected; page traversal and external consumer usage were not observable."
+  },
+  "recommended_next_pass": "token-description-pass"
+}
