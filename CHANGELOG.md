@@ -4,6 +4,12 @@
 
 - No unreleased changes.
 
+## 0.2.2 - 2026-08-12
+
+- Added visible `Version: 0.2.2` metadata to each Claude skill body.
+- Documented the current skill package version in the README.
+- Added maintainer guidance to update skill-visible versions during releases.
+
 ## 0.2.1 - 2026-08-12
 
 - Clarified README language for the current MVP skill suite.

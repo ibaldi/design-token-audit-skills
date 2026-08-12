@@ -29,6 +29,8 @@ The goal is not only cleanup. The goal is a token library whose intent is readab
 
 The current MVP contains four Claude-ready skills:
 
+Current skill package version: `0.2.2`
+
 | Skill | Purpose |
 | --- | --- |
 | `design-token-audit-orchestrator` | Runs the end-to-end audit workflow step by step. |
@@ -157,6 +159,8 @@ Use the release script:
 This rebuilds the Claude ZIP packages and creates a GitHub Release with the ZIPs attached as downloadable artifacts.
 
 Use a new semantic version for each public update, for example `v0.2.1` or `v0.3.0`.
+
+When releasing, update the visible `Version:` line in each `SKILL.md` so users can confirm which package they have installed inside Claude.
 
 ## Repository Status
 

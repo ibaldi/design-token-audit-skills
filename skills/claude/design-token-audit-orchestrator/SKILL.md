@@ -5,6 +5,8 @@ description: Run an end-to-end, plugin-independent design token audit workflow f
 
 # Design Token Audit Orchestrator
 
+Version: 0.2.2
+
 Use this skill to run the full audit workflow step by step.
 
 ## Core Contract
