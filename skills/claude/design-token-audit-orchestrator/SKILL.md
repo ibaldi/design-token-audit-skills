@@ -17,14 +17,31 @@ Approval for one pass does not approve any other pass.
 
 1. Negotiate available Figma read capabilities, select a conforming adapter, and run the read-only scan on a canonical snapshot.
 2. Report current state with counts, inspection method, coverage, and limitations in synchronized Markdown and versioned JSON.
-3. Recommend pass order.
-4. Run one pass at a time.
-5. Preview before any write.
-6. Wait for explicit approval.
-7. Apply only approved changes.
-8. Verify after the pass.
-9. Document with changelog and reference evidence.
-10. Finish with baseline verification and handoff.
+3. Validate the read-only JSON against the audit output contract.
+4. Stop and correct the scan if the JSON is invalid, stale, missing coverage, or inconsistent with the Markdown.
+5. Recommend pass order.
+6. Run one pass at a time.
+7. Preview before any write.
+8. Wait for explicit approval.
+9. Re-read the affected records immediately before writing and stop if drift is detected.
+10. Apply only approved changes.
+11. Verify after the pass.
+12. Document with changelog and reference evidence.
+13. Finish with baseline verification and handoff.
+
+## Read-only Gate
+
+Do not begin mode cleanup, scope cleanup, changelog alignment, naming cleanup, orphan review, description passes, semantic gap-finding, token creation proposals, or baseline release until the read-only scan has produced:
+
+- a Markdown report
+- a JSON object with `schema_version: 1.0.0`
+- explicit inspection method, coverage, and limitations
+- valid inventory and summary counts
+- validation success from the read-only scan validator, when scripts can be executed
+
+If automated validation is unavailable, manually apply the same checks and disclose that automated validation was not run.
+
+If the JSON is invalid or contradicts the Markdown, correct the read-only scan before continuing.
 
 ## Recommended Pass Order
 

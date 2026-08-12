@@ -151,13 +151,13 @@ python3 skills/claude/token-readonly-scan/scripts/validate_audit_json.py skills/
 Use the release script:
 
 ```bash
-./scripts/release.sh v0.1.0
+./scripts/release.sh v0.2.1
 ```
 
 This rebuilds the Claude ZIP packages and creates a GitHub Release with the ZIPs attached as downloadable artifacts.
 
-Use a new semantic version for each public update, for example `v0.1.1` or `v0.2.0`.
+Use a new semantic version for each public update, for example `v0.2.1` or `v0.3.0`.
 
 ## Repository Status
 
-Initial MVP skill suite for Claude. The repository is intentionally small so the workflow can be tested in a Figma sandbox before more specialized audit passes are added.
+MVP Claude skill suite with a hardened read-only scan contract, canonical Figma token snapshot model, validated JSON output, semantic gap-finding, and token creation proposals. The repository is intentionally small so the workflow can be tested in a Figma sandbox before more specialized audit passes are added.

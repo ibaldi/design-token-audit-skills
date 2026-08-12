@@ -2,7 +2,15 @@
 
 ## Unreleased
 
-- Expanded skill trigger descriptions for plugin-independent audits, capability negotiation, canonical snapshots, coverage reporting, and validated outputs.
+- No unreleased changes.
+
+## 0.2.1 - 2026-08-12
+
+- Clarified README language for the current MVP skill suite.
+- Added a minimal valid audit JSON fixture for validator testing.
+- Documented fixture validation in the README.
+- Strengthened the orchestrator gate so later audit passes require a valid read-only JSON scan first.
+- Clarified the pre-write drift check for approved write passes.
 
 ## 0.2.0 - 2026-08-11
 
