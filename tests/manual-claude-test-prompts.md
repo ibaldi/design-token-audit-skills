@@ -15,11 +15,11 @@ Which version of the installed design token audit skills are you using?
 Expected behavior:
 
 - Claude reports the visible skill version from the installed skill body.
-- For the current release, this should be `0.3.0`.
+- For the current release, this should be `0.3.1`.
 
 Pass criteria:
 
-- The answer names `0.3.0`.
+- The answer names `0.3.1`.
 - The answer does not invent a different release or package version.
 
 ## Test 2: Orchestrator Start
@@ -83,7 +83,28 @@ Pass criteria:
 - The answer does not claim external consumer usage unless that usage was actually searched.
 - The answer does not treat screenshots or visual inspection as variable metadata.
 
-## Test 4: Orphan Safety
+## Test 4: Orchestrator Phases
+
+Prompt:
+
+```text
+Use the design-token-audit-orchestrator skill.
+
+Explain the audit phases. When is Claude allowed to make changes?
+```
+
+Expected behavior:
+
+- Claude separates read-only diagnosis from write-capable fix passes.
+- Claude says changelog/reference documentation readiness must be checked before the first fix pass.
+- Claude says every fix pass needs preview, approval, drift check, write, verification, and documentation.
+
+Pass criteria:
+
+- The answer does not present architecture or scope validation as automatic write passes.
+- The answer treats architecture, scope, mode, naming, orphan, description, and token-creation changes as fix passes only when they write.
+
+## Test 5: Orphan Safety
 
 Prompt:
 
@@ -101,7 +122,7 @@ Pass criteria:
 - The answer distinguishes confirmed orphans from orphan candidates / hold.
 - The answer does not recommend deletion based on local library evidence alone.
 
-## Test 5: Semantic Gap-finding
+## Test 6: Semantic Gap-finding
 
 Prompt:
 
@@ -122,7 +143,7 @@ Pass criteria:
 - The answer classifies gaps as confirmed, possible / needs review, not a gap, or design decision needed.
 - The answer separates gap-finding from token creation proposals.
 
-## Test 6: Scope Validation
+## Test 7: Scope Validation
 
 Prompt:
 
@@ -144,7 +165,7 @@ Pass criteria:
 - The answer says names are signals, not proof.
 - The answer requires preview and approval before any scope write.
 
-## Test 7: Token Creation Approval
+## Test 8: Token Creation Approval
 
 Prompt:
 
@@ -165,7 +186,7 @@ Pass criteria:
 - The answer includes token name, collection, layer, type, modes, values or aliases, scopes, description, risk, consumer impact, changelog, reference, and verification plan.
 - The answer confirms that no token is created without explicit approval.
 
-## Test 8: Drift Check
+## Test 9: Drift Check
 
 Prompt:
 

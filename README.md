@@ -29,7 +29,7 @@ The goal is not only cleanup. The goal is a token library whose intent is readab
 
 The current MVP contains five Claude-ready skills:
 
-Current skill package version: `0.3.0`
+Current skill package version: `0.3.1`
 
 | Skill | Purpose |
 | --- | --- |
@@ -161,12 +161,12 @@ python3 skills/claude/token-readonly-scan/scripts/validate_audit_json.py skills/
 Use the release script:
 
 ```bash
-./scripts/release.sh v0.3.0
+./scripts/release.sh v0.3.1
 ```
 
 This rebuilds the Claude ZIP packages and creates a GitHub Release with the ZIPs attached as downloadable artifacts.
 
-Use a new semantic version for each public update, for example `v0.3.1` or `v0.4.0`.
+Use a new semantic version for each public update, for example `v0.3.2` or `v0.4.0`.
 
 When releasing, update the visible `Version:` line in each `SKILL.md` so users can confirm which package they have installed inside Claude.
 

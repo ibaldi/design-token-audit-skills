@@ -5,7 +5,7 @@ description: Perform a plugin-independent, read-only audit of a Figma design tok
 
 # Token Read-only Scan
 
-Version: 0.3.0
+Version: 0.3.1
 
 Use this skill to inspect a design token library without changing anything.
 

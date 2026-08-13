@@ -5,7 +5,7 @@ description: Run an end-to-end, plugin-independent design token audit workflow f
 
 # Design Token Audit Orchestrator
 
-Version: 0.3.0
+Version: 0.3.1
 
 Use this skill to run the full audit workflow step by step.
 
@@ -17,23 +17,53 @@ Approval for one pass does not approve any other pass.
 
 ## Flow
 
+Run the audit as phases, not as a linear list of write-capable passes.
+
+### Phase 1: Read-only Diagnosis
+
 1. Negotiate available Figma read capabilities, select a conforming adapter, and run the read-only scan on a canonical snapshot.
 2. Report current state with counts, inspection method, coverage, and limitations in synchronized Markdown and versioned JSON.
 3. Validate the read-only JSON against the audit output contract.
 4. Stop and correct the scan if the JSON is invalid, stale, missing coverage, or inconsistent with the Markdown.
-5. Recommend pass order.
-6. Run one pass at a time.
-7. Preview before any write.
-8. Wait for explicit approval.
-9. Re-read the affected records immediately before writing and stop if drift is detected.
-10. Apply only approved changes.
-11. Verify after the pass.
-12. Document with changelog and reference evidence.
-13. Finish with baseline verification and handoff.
+5. Run validation passes read-only, such as hierarchy validation, scope validation, mode review, naming review, orphan review, description review, and semantic gap-finding.
+6. Report findings, risks, holds, and possible fix proposals. Do not change anything in this phase.
+
+### Phase 2: Documentation Readiness
+
+Before the first approved fix pass, verify that changelog and reference documentation can be created correctly.
+
+Check:
+
+- changelog existence
+- changelog format
+- author and type conventions
+- newest-first ordering
+- reference section, card, or frame location
+- required reference evidence for the intended fix
+
+If documentation readiness is missing, run changelog/reference alignment as its own previewed and approved fix pass before other writes.
+
+### Phase 3: Approved Fix Passes
+
+Run one fix pass at a time. For every write-capable pass:
+
+1. Create an exact preview.
+2. Wait for explicit approval for that pass only.
+3. Re-read the affected records immediately before writing.
+4. Stop if drift is detected.
+5. Apply only approved changes.
+6. Verify after the pass.
+7. Document with changelog and reference evidence.
+
+Architecture, scope, mode, naming, orphan, description, and token-creation changes are all fix passes when they write. Their validation versions remain read-only.
+
+### Phase 4: Baseline Release
+
+Finish with final verification, hold-item documentation, changelog/reference evidence, and handoff or release notes.
 
 ## Read-only Gate
 
-Do not begin mode cleanup, scope cleanup, changelog alignment, naming cleanup, orphan review, description passes, semantic gap-finding, token creation proposals, or baseline release until the read-only scan has produced:
+Do not begin hierarchy validation, scope validation, mode review, naming review, orphan review, description review, semantic gap-finding, token creation proposals, fix passes, or baseline release until the read-only scan has produced:
 
 - a Markdown report
 - a JSON object with `schema_version: 1.0.0`
@@ -45,17 +75,19 @@ If automated validation is unavailable, manually apply the same checks and discl
 
 If the JSON is invalid or contradicts the Markdown, correct the read-only scan before continuing.
 
-## Recommended Pass Order
+## Recommended Diagnosis Order
 
-1. Mode cleanup
-2. Scope cleanup
-3. Changelog alignment
-4. Naming cleanup
-5. Orphan review
-6. Description passes
-7. Semantic gap-finding
-8. Token creation proposal, only if requested or justified
-9. Baseline release
+1. Read-only scan
+2. Hierarchy / architecture validation
+3. Scope validation
+4. Mode review
+5. Naming review
+6. Orphan review
+7. Description review
+8. Semantic gap-finding
+9. Token creation proposal, only if requested or justified
+
+Before any fix proposal is applied, complete Documentation Readiness.
 
 ## Use Individual Skills
 

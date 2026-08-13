@@ -4,6 +4,13 @@
 
 - No unreleased changes.
 
+## 0.3.1 - 2026-08-13
+
+- Updated the orchestrator from a linear pass order to a phased audit model.
+- Separated read-only diagnosis from write-capable fix passes.
+- Added Documentation Readiness as a required gate before the first fix pass.
+- Clarified that architecture, scope, mode, naming, orphan, description, and token-creation changes are fix passes when they write.
+
 ## 0.3.0 - 2026-08-13
 
 - Added `token-scope-validation` skill for general scope-intent validation.
