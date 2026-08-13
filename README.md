@@ -27,14 +27,15 @@ The goal is not only cleanup. The goal is a token library whose intent is readab
 
 ## Skill Suite
 
-The current MVP contains four Claude-ready skills:
+The current MVP contains five Claude-ready skills:
 
-Current skill package version: `0.2.2`
+Current skill package version: `0.3.0`
 
 | Skill | Purpose |
 | --- | --- |
 | `design-token-audit-orchestrator` | Runs the end-to-end audit workflow step by step. |
 | `token-readonly-scan` | Performs the initial read-only scan and reports the current state. |
+| `token-scope-validation` | Validates token scopes against intended usage, including but not limited to `ALL_SCOPES`. |
 | `token-semantic-gap-finding` | Finds missing semantic token coverage without creating tokens. |
 | `token-creation-proposal` | Turns approved semantic gaps into exact token creation proposals. |
 
@@ -80,6 +81,7 @@ Use the ZIP files from the latest GitHub Release:
 ```text
 design-token-audit-orchestrator.zip
 token-readonly-scan.zip
+token-scope-validation.zip
 token-semantic-gap-finding.zip
 token-creation-proposal.zip
 ```
@@ -159,15 +161,15 @@ python3 skills/claude/token-readonly-scan/scripts/validate_audit_json.py skills/
 Use the release script:
 
 ```bash
-./scripts/release.sh v0.2.1
+./scripts/release.sh v0.3.0
 ```
 
 This rebuilds the Claude ZIP packages and creates a GitHub Release with the ZIPs attached as downloadable artifacts.
 
-Use a new semantic version for each public update, for example `v0.2.1` or `v0.3.0`.
+Use a new semantic version for each public update, for example `v0.3.1` or `v0.4.0`.
 
 When releasing, update the visible `Version:` line in each `SKILL.md` so users can confirm which package they have installed inside Claude.
 
 ## Repository Status
 
-MVP Claude skill suite with a hardened read-only scan contract, canonical Figma token snapshot model, validated JSON output, semantic gap-finding, and token creation proposals. The repository is intentionally small so the workflow can be tested in a Figma sandbox before more specialized audit passes are added.
+MVP Claude skill suite with a hardened read-only scan contract, canonical Figma token snapshot model, validated JSON output, scope validation, semantic gap-finding, and token creation proposals. The repository is intentionally small so the workflow can be tested in a Figma sandbox before more specialized audit passes are added.

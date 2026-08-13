@@ -5,7 +5,7 @@ description: Run an end-to-end, plugin-independent design token audit workflow f
 
 # Design Token Audit Orchestrator
 
-Version: 0.2.2
+Version: 0.3.0
 
 Use this skill to run the full audit workflow step by step.
 
@@ -62,6 +62,7 @@ If the JSON is invalid or contradicts the Markdown, correct the read-only scan b
 Use these skills when the user asks for a specific pass:
 
 - `token-readonly-scan` for the initial current-state report and its required Figma execution contract. Do not begin later passes until the scan states what was and was not observable.
+- `token-scope-validation` for validating token scopes against intended usage, including `ALL_SCOPES`, missing scopes, irrelevant scopes, and Typography/AX exceptions.
 - `token-semantic-gap-finding` for missing semantic token coverage.
 - `token-creation-proposal` for exact token creation proposals after a gap is accepted.
 

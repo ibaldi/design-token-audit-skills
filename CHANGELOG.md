@@ -4,6 +4,14 @@
 
 - No unreleased changes.
 
+## 0.3.0 - 2026-08-13
+
+- Added `token-scope-validation` skill for general scope-intent validation.
+- Added scope intent heuristics for background, foreground, border, radius, spacing, sizing, opacity, effect, and Typography tokens.
+- Defined `ALL_SCOPES` as a scope review signal rather than the only scope rule.
+- Added scope finding, preview, risk, and verification formats.
+- Updated README to list five Claude-ready skills.
+
 ## 0.2.2 - 2026-08-12
 
 - Added visible `Version: 0.2.2` metadata to each Claude skill body.

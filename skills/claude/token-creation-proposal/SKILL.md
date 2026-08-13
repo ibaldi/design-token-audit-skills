@@ -5,7 +5,7 @@ description: Prepare exact design token creation proposals after semantic gaps h
 
 # Token Creation Proposal
 
-Version: 0.2.2
+Version: 0.3.0
 
 Use this skill to turn accepted semantic gaps into concrete token creation proposals.
 

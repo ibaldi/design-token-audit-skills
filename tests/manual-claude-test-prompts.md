@@ -15,11 +15,11 @@ Which version of the installed design token audit skills are you using?
 Expected behavior:
 
 - Claude reports the visible skill version from the installed skill body.
-- For the current release, this should be `0.2.2`.
+- For the current release, this should be `0.3.0`.
 
 Pass criteria:
 
-- The answer names `0.2.2`.
+- The answer names `0.3.0`.
 - The answer does not invent a different release or package version.
 
 ## Test 2: Orchestrator Start
@@ -122,7 +122,29 @@ Pass criteria:
 - The answer classifies gaps as confirmed, possible / needs review, not a gap, or design decision needed.
 - The answer separates gap-finding from token creation proposals.
 
-## Test 6: Token Creation Approval
+## Test 6: Scope Validation
+
+Prompt:
+
+```text
+Use the token-scope-validation skill.
+
+Explain how you would validate token scopes in a Figma token library. Do not focus only on ALL_SCOPES; explain how you would detect scopes that are too broad, too narrow, irrelevant, or high risk.
+```
+
+Expected behavior:
+
+- Claude treats scope validation as read-only.
+- Claude describes `ALL_SCOPES` as one review signal, not the full rule.
+- Claude considers token type, collection, name, description, peer patterns, Typography, AX/accessibility, and documented exceptions.
+
+Pass criteria:
+
+- The answer distinguishes scope mismatch, too broad, too narrow, accepted exception, and needs design decision.
+- The answer says names are signals, not proof.
+- The answer requires preview and approval before any scope write.
+
+## Test 7: Token Creation Approval
 
 Prompt:
 
@@ -143,7 +165,7 @@ Pass criteria:
 - The answer includes token name, collection, layer, type, modes, values or aliases, scopes, description, risk, consumer impact, changelog, reference, and verification plan.
 - The answer confirms that no token is created without explicit approval.
 
-## Test 7: Drift Check
+## Test 8: Drift Check
 
 Prompt:
 
