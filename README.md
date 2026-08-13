@@ -108,6 +108,12 @@ Owner for changelog:
 Target baseline:
 ```
 
+For a fuller manual test checklist, see:
+
+```text
+tests/manual-claude-test-prompts.md
+```
+
 ## For Maintainers
 
 This section is for people who want to edit, rebuild, or release the skills.
