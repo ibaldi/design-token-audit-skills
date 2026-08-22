@@ -1,0 +1,16 @@
+{
+  "schema_version": "1.0.0", "snapshot_type": "figma_token_snapshot", "snapshot_id": "dts-export-fixture", "captured_at": "2026-08-22T10:00:00Z",
+  "source": {"file_key": "fixture-file", "file_name": "Fixture Library", "branch_or_version": null, "export_fingerprint": "sha256:fixture"},
+  "adapter": {"adapter_id": "structured-json-export", "adapter_version": "1", "source_type": "export", "capabilities": {
+    "identify_file": {"status": "available", "evidence": "export manifest"}, "read_local_collections": {"status": "available", "evidence": "complete collections section"},
+    "read_local_variables": {"status": "available", "evidence": "complete variables section"}, "resolve_local_aliases": {"status": "available", "evidence": "stable alias target IDs"},
+    "traverse_document_nodes": {"status": "unavailable", "evidence": "export contains no document tree"}, "read_bound_variables": {"status": "unavailable", "evidence": "export contains no bindings"}
+  }},
+  "coverage": {"collections": {"status": "complete", "captured": 1, "failed": 0}, "variables": {"status": "complete", "captured": 2, "failed": 0}, "pages": {"status": "not_observable", "captured_ids": [], "omitted_ids": []}, "usages": {"status": "not_observable"}, "document_evidence": {"status": "not_observable"}},
+  "collections": [{"id": "Collection:semantic", "name": "Semantic", "default_mode_id": "Mode:light", "modes": [{"id": "Mode:light", "name": "Light", "position": 0}, {"id": "Mode:dark", "name": "Dark", "position": 1}], "variable_ids": ["Variable:primitive-red", "Variable:danger"], "remote": false, "hidden_from_publishing": false, "provenance": {"adapter_id": "structured-json-export", "source_path": "$.collections[0]"}}],
+  "variables": [
+    {"id": "Variable:primitive-red", "name": "Primitive/red/600", "collection_id": "Collection:semantic", "resolved_type": "COLOR", "description": "Red primitive", "scopes": ["ALL_SCOPES"], "values_by_mode": {"Mode:light": {"kind": "literal", "value": {"r": 0.8, "g": 0.1, "b": 0.1, "a": 1}}, "Mode:dark": {"kind": "literal", "value": {"r": 1, "g": 0.3, "b": 0.3, "a": 1}}}, "provenance": {"adapter_id": "structured-json-export", "source_path": "$.variables[0]"}},
+    {"id": "Variable:danger", "name": "Semantic/action/danger", "collection_id": "Collection:semantic", "resolved_type": "COLOR", "description": "Destructive action foreground", "scopes": ["TEXT_FILL"], "values_by_mode": {"Mode:light": {"kind": "alias", "target_variable_id": "Variable:primitive-red"}, "Mode:dark": {"kind": "alias", "target_variable_id": "Variable:primitive-red"}}, "provenance": {"adapter_id": "structured-json-export", "source_path": "$.variables[1]"}}
+  ],
+  "pages": [], "usages": [], "document_evidence": [], "warnings": ["Document usage is not observable from this export"]
+}

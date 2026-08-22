@@ -5,7 +5,7 @@ description: Find missing semantic token coverage in Figma design systems withou
 
 # Token Semantic Gap-finding
 
-Version: 0.3.1
+Version: 0.4.0
 
 Use this skill to identify semantic token gaps. This pass is read-only.
 

@@ -1,0 +1,17 @@
+{
+  "schema_version": "1.0.0", "snapshot_type": "figma_token_snapshot", "snapshot_id": "dts-mcp-fixture", "captured_at": "2026-08-22T10:00:00Z",
+  "source": {"file_key": "fixture-file", "file_name": "Fixture Library", "branch_or_version": null},
+  "adapter": {"adapter_id": "generic-figma-mcp", "adapter_version": "1", "source_type": "mcp", "capabilities": {
+    "identify_file": {"status": "available", "evidence": "structured file response"}, "read_local_collections": {"status": "available", "evidence": "collection query completed"},
+    "read_local_variables": {"status": "available", "evidence": "variable query completed"}, "resolve_local_aliases": {"status": "available", "evidence": "target IDs returned"},
+    "traverse_document_nodes": {"status": "available", "evidence": "page query completed"}, "read_bound_variables": {"status": "available", "evidence": "binding metadata returned"}
+  }},
+  "coverage": {"collections": {"status": "complete", "captured": 1, "failed": 0}, "variables": {"status": "complete", "captured": 2, "failed": 0}, "pages": {"status": "complete", "captured_ids": ["Page:1"], "omitted_ids": []}, "usages": {"status": "complete"}, "document_evidence": {"status": "not_configured"}},
+  "collections": [{"id": "Collection:semantic", "name": "Semantic", "default_mode_id": "Mode:light", "modes": [{"id": "Mode:light", "name": "Light", "position": 0}, {"id": "Mode:dark", "name": "Dark", "position": 1}], "variable_ids": ["Variable:primitive-red", "Variable:danger"], "remote": false, "hidden_from_publishing": false, "provenance": {"adapter_id": "generic-figma-mcp", "source_path": "collections response"}}],
+  "variables": [
+    {"id": "Variable:primitive-red", "name": "Primitive/red/600", "collection_id": "Collection:semantic", "resolved_type": "COLOR", "description": "Red primitive", "scopes": ["ALL_SCOPES"], "values_by_mode": {"Mode:light": {"kind": "literal", "value": {"r": 0.8, "g": 0.1, "b": 0.1, "a": 1}}, "Mode:dark": {"kind": "literal", "value": {"r": 1, "g": 0.3, "b": 0.3, "a": 1}}}, "provenance": {"adapter_id": "generic-figma-mcp", "source_path": "variables response"}},
+    {"id": "Variable:danger", "name": "Semantic/action/danger", "collection_id": "Collection:semantic", "resolved_type": "COLOR", "description": "Destructive action foreground", "scopes": ["TEXT_FILL"], "values_by_mode": {"Mode:light": {"kind": "alias", "target_variable_id": "Variable:primitive-red"}, "Mode:dark": {"kind": "alias", "target_variable_id": "Variable:primitive-red"}}, "provenance": {"adapter_id": "generic-figma-mcp", "source_path": "variables response"}}
+  ],
+  "pages": [{"id": "Page:1", "name": "Foundations", "traversal_status": "complete", "node_count": 1, "provenance": {"adapter_id": "generic-figma-mcp", "source_path": "page traversal response"}}],
+  "usages": [{"variable_id": "Variable:danger", "node_id": "Node:1", "page_id": "Page:1", "binding_path": "fills[0].color", "binding_kind": "bound_variable", "provenance": {"adapter_id": "generic-figma-mcp", "source_path": "binding response"}}], "document_evidence": [], "warnings": []
+}

@@ -5,7 +5,7 @@ description: Perform a plugin-independent, read-only audit of a Figma design tok
 
 # Token Read-only Scan
 
-Version: 0.3.1
+Version: 0.4.0
 
 Use this skill to inspect a design token library without changing anything.
 
@@ -24,6 +24,8 @@ Do not write, rename, delete, create, move, or edit any Figma variable, token, n
 Do not infer fields the available Figma access cannot expose. Mark them `not observable` and include them in the coverage statement.
 
 Do not run audit rules directly on adapter-specific responses. Normalize and integrity-check the canonical snapshot first, then gate each rule by its required capabilities.
+
+When the canonical snapshot is saved as a file, run `python3 scripts/validate_snapshot.py <snapshot.json>` before applying audit rules.
 
 ## Scan Checklist
 

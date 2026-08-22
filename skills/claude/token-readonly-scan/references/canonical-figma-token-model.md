@@ -210,3 +210,19 @@ Before audit evaluation, verify:
 - usage records reference observed variables and pages when those inventories are complete
 
 A failed core integrity check makes the snapshot invalid. Do not run token-quality rules on an invalid snapshot.
+
+## Validation And Contract Comparison
+
+Validate one normalized snapshot with:
+
+```bash
+python3 scripts/validate_snapshot.py <snapshot.json>
+```
+
+Compare two or more adapter snapshots of the same source with:
+
+```bash
+python3 scripts/validate_snapshot.py --compare <snapshot-a.json> <snapshot-b.json>
+```
+
+Comparison ignores adapter metadata, provenance, optional page usage, timestamps, and snapshot IDs. It requires equivalent source identity, collections, ordered modes, variables, descriptions, scopes, literals, and alias semantics.

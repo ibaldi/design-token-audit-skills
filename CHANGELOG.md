@@ -1,8 +1,10 @@
 # Changelog
 
-## Unreleased
+## 0.4.0 - 2026-08-22
 
-- No unreleased changes.
+- Added a dependency-free validator for canonical Figma token snapshots.
+- Added equivalent Plugin API, MCP, and structured-export snapshot fixtures.
+- Added adapter-independent semantic contract comparison across snapshots.
 
 ## 0.3.1 - 2026-08-13
 

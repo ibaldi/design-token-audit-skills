@@ -29,7 +29,7 @@ The goal is not only cleanup. The goal is a token library whose intent is readab
 
 The current MVP contains five Claude-ready skills:
 
-Current skill package version: `0.3.1`
+Current skill package version: `0.4.0`
 
 | Skill | Purpose |
 | --- | --- |
@@ -44,6 +44,8 @@ The read-only scan includes a concrete Figma execution contract. It defines the 
 Every scan produces synchronized Markdown and JSON. The versioned JSON contract provides stable finding fingerprints, explicit evidence and confidence, inventory totals, coverage status, limitations, and machine-comparable summaries for later baseline checks.
 
 The read-only skill includes a dependency-free validator for generated audit JSON artifacts. It checks structural requirements and cross-field consistency before a report is delivered or stored as a baseline.
+
+It also includes a dependency-free canonical snapshot validator and equivalent Plugin API, MCP, and export fixtures. Contract comparison verifies that different adapters preserve the same token semantics even when optional document coverage differs.
 
 The scan is not tied to a named Figma plugin. A capability-based adapter contract supports the Figma Plugin API, compatible MCP tools, structured exports, other APIs, and carefully verified mixed sources. Every adapter normalizes its data into the same canonical token snapshot before audit rules run. Missing optional capabilities reduce coverage; missing collection or variable inventory capabilities block the scan.
 
@@ -156,12 +158,21 @@ Validate it with:
 python3 skills/claude/token-readonly-scan/scripts/validate_audit_json.py skills/claude/token-readonly-scan/fixtures/minimal-valid-audit.json
 ```
 
+Validate and compare the canonical adapter fixtures with:
+
+```bash
+python3 skills/claude/token-readonly-scan/scripts/validate_snapshot.py --compare \
+  skills/claude/token-readonly-scan/fixtures/snapshot-plugin-api.json \
+  skills/claude/token-readonly-scan/fixtures/snapshot-mcp.json \
+  skills/claude/token-readonly-scan/fixtures/snapshot-export.json
+```
+
 ## Creating A GitHub Release
 
 Use the release script:
 
 ```bash
-./scripts/release.sh v0.3.1
+./scripts/release.sh v0.4.0
 ```
 
 This rebuilds the Claude ZIP packages and creates a GitHub Release with the ZIPs attached as downloadable artifacts.
