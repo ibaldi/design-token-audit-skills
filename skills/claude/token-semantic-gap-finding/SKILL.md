@@ -1,17 +1,39 @@
 ---
 name: token-semantic-gap-finding
-description: Find missing semantic token coverage in Figma design systems without creating tokens. Use when the user asks to identify missing tokens, semantic gaps, hardcoded values, primitive values used in components, incomplete state coverage, or token opportunities across component states, product flows, Global tokens, platform tokens, or component tokens.
+description: Find evidence-backed semantic token gaps without creating tokens. Use for hardcoded values, primitive usage, missing states, or incomplete semantic coverage.
 ---
 
 # Token Semantic Gap-finding
 
-Version: 0.4.0
+Version: 0.8.0
 
 Use this skill to identify semantic token gaps. This pass is read-only.
 
 ## Rule
 
 Do not create tokens during gap-finding. Produce evidence-backed findings and proposals only.
+
+## Required Input
+
+Start from a validated read-only scan and record its audit ID, scan timestamp, schema version, validation result, coverage, and limitations.
+
+Read its validated `property_coverage`. Complete semantic-gap coverage is impossible when a relevant adapter-declared property family is partial, unsupported, not observable, or failed; propagate that limitation into the Phase-1 assessment.
+
+Gap confirmation also requires observable component, state, usage, or product-flow evidence. If this evidence is partial or unavailable:
+
+- mark the affected check `not observable` or classify it as `Possible semantic gap / needs review`
+- state which pages, components, states, or consumers were not inspected
+- do not classify a recurring intent as confirmed
+
+If the core token inventory is invalid or stale, stop and refresh the read-only scan.
+
+## Mandatory Hardcoded-value Sweep
+
+Run this assessment whenever the orchestrator reaches `P1.4`; it is not optional merely because the user did not request it separately. When node traversal is observable, inspect all in-scope component nodes and relevant bindable properties, including literals with no existing-variable match. Record component/state context and traversal coverage rather than reviewing only values already surfaced as binding candidates.
+
+Group candidates by semantic intent and property semantics, not by raw value alone. Before classifying a gap, check suitable existing tokens in every observable relevant local or enabled library. Distinguish separate component consumers from variants or instances of the same component; repeated equal literals alone do not prove a system-level semantic gap.
+
+Use `partial` or `not_observable` when coverage is insufficient. Use `inapplicable` only after an attempted assessment establishes a concrete reason such as no in-scope components or no relevant bindable properties. "Not requested", "not mentioned", time constraints, and effort are never valid reasons.
 
 ## What Counts As A Semantic Gap
 
@@ -30,18 +52,23 @@ Examples:
 
 Classify each finding as:
 
-- **Confirmed semantic gap:** recurring intent, no suitable existing token, clear owning layer, and evidence.
+- **Confirmed semantic gap:** recurring or explicitly system-level intent, no suitable token in all observable relevant libraries, clear owning layer, compatible value semantics, and sufficient component or product-flow evidence. Multiple variants or instances of one component and a shared raw value do not by themselves satisfy recurrence.
 - **Possible semantic gap / needs review:** pattern found, but ownership, naming, or existing-token fit is uncertain.
 - **Not a gap:** existing token covers it, usage is one-off, or tokenizing adds unnecessary complexity.
 - **Design decision needed:** behavior is inconsistent or unresolved.
+- **Not observable:** available capabilities cannot establish the required component, usage, or library evidence.
+
+If the proposed collection or owning layer is unresolved, classify the candidate as `Design decision needed` or `Possible semantic gap / needs review`; do not present it as a write-ready confirmed gap.
 
 ## Candidate Format
 
 ```text
 Semantic gap candidate
 
+Source audit:
 Intent:
 Evidence:
+Coverage and limitations:
 Current representation:
 Nearest existing token:
 Why this is a gap:
@@ -68,6 +95,10 @@ Recommended mapping fixes:
 Recommended holds:
 ```
 
+## Orchestrator Handoff
+
+When this skill runs inside the audit workflow, return a compact handoff with `skill`, `result_status`, `source_audit_id`, `produced_artifacts`, `blockers`, and `recommended_next_action`. Include a `phase1_assessment` record containing `status`, `artifact_id`, `coverage`, and `reason` for `semantic_gap_finding`. Report observed facts only. The orchestrator owns workflow-step completion and `workflow-state.json`; this skill must not advance the global dashboard itself.
+
 ## Next Step
 
-If a gap should become a token, move to `token-creation-proposal`. Do not create anything without a separate approved creation proposal.
+If a gap should become a token, move to `token-creation-proposal`. If an existing variable already covers the intent but a node uses a literal or the wrong variable, route the mapping fix to `token-binding-fix`. If the existing variable itself has the wrong mode value, route a separately evidenced correction to `token-value-fix`. Do not create, correct, or bind anything without the corresponding separate approved pass.

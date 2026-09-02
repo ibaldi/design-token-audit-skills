@@ -8,10 +8,18 @@ if [ "$#" -ne 1 ]; then
 fi
 
 VERSION="$1"
+PACKAGE_VERSION="${VERSION#v}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist/claude"
 
 cd "$ROOT_DIR"
+
+if ! [[ "$VERSION" =~ ^v[0-9]+\.[0-9]+\.[0-9]+$ ]]; then
+  echo "Version must use vMAJOR.MINOR.PATCH, for example v0.4.3"
+  exit 1
+fi
+
+python3 ./scripts/check_release.py --version "$PACKAGE_VERSION"
 
 ./scripts/build-claude-zips.sh
 

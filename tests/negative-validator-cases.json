@@ -1,0 +1,96 @@
+{
+  "audit_cases": [
+    {
+      "name": "empty inventory",
+      "path": ["inventory"],
+      "value": {},
+      "expected_error": "inventory.collections_total: missing required field"
+    },
+    {
+      "name": "empty file identity",
+      "path": ["source", "file_key"],
+      "value": "",
+      "expected_error": "source.file_key: expected non-empty string"
+    },
+    {
+      "name": "pages requested is not an array",
+      "path": ["source", "pages_requested"],
+      "value": "Foundations",
+      "expected_error": "source.pages_requested: expected array"
+    },
+    {
+      "name": "mutable or malformed fingerprint",
+      "path": ["findings", 0, "fingerprint"],
+      "value": "empty-description|Semantic/action/danger",
+      "expected_error": "findings[0].fingerprint: expected"
+    },
+    {
+      "name": "blocked scan with complete core inventory",
+      "path": ["status"],
+      "value": "blocked",
+      "expected_error": "status: blocked requires incomplete or failed core inventory coverage"
+    },
+    {
+      "name": "negative variable total",
+      "path": ["inventory", "variables_total"],
+      "value": -1,
+      "expected_error": "inventory.variables_total: expected non-negative integer"
+    },
+    {
+      "name": "documentation marked ready without observable checks",
+      "path": ["documentation_readiness", "status"],
+      "value": "ready",
+      "expected_error": "documentation_readiness.status: ready requires all components and checks to pass"
+    },
+    {
+      "name": "alias edge total contradicts target counts",
+      "path": ["derived_metrics", "local_inbound_aliases", "edges_total"],
+      "value": 99,
+      "expected_error": "derived_metrics.local_inbound_aliases.edges_total: must equal the sum of target counts"
+    },
+    {
+      "name": "description pattern totals contradict evaluated variables",
+      "path": ["derived_metrics", "description_patterns", "evaluated_variables"],
+      "value": 99,
+      "expected_error": "pattern counts plus unclassified must equal evaluated_variables"
+    },
+    {
+      "name": "unobservable scopes exceed collection total",
+      "path": ["derived_metrics", "scopes_by_collection", "collections", "VariableCollectionId:semantic", "unobservable"],
+      "value": 3,
+      "expected_error": "unobservable: cannot exceed variables_total"
+    }
+  ],
+  "snapshot_cases": [
+    {
+      "name": "missing variable name",
+      "path": ["variables", 0, "name"],
+      "value": null,
+      "expected_error": "variables[0].name: expected non-empty string"
+    },
+    {
+      "name": "unknown Figma variable type",
+      "path": ["variables", 0, "resolved_type"],
+      "value": "TYPOGRAPHY",
+      "expected_error": "variables[0].resolved_type: expected one of"
+    },
+    {
+      "name": "invalid color literal",
+      "path": ["variables", 0, "values_by_mode", "Mode:light", "value"],
+      "value": "#ff0000",
+      "expected_error": "expected RGBA object"
+    },
+    {
+      "name": "mixed adapter without record capture timestamps",
+      "path": ["adapter", "source_type"],
+      "value": "mixed",
+      "expected_error": "provenance.captured_at: expected UTC ISO-8601 string"
+    },
+    {
+      "name": "duplicate mode position",
+      "path": ["collections", 0, "modes", 1, "position"],
+      "value": 0,
+      "expected_error": "duplicate mode position"
+    }
+  ]
+}

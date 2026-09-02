@@ -1,0 +1,177 @@
+[
+  {
+    "query": "Audit our Figma design-token library end to end, establish a baseline, and do not change anything until each cleanup pass is previewed and approved.",
+    "should_trigger": true,
+    "expected_skill": "design-token-audit-orchestrator"
+  },
+  {
+    "query": "We have last month's token audit and a new Figma snapshot. Coordinate a safe baseline comparison and tell us which supported fix pass should come next.",
+    "should_trigger": true,
+    "expected_skill": "design-token-audit-orchestrator"
+  },
+  {
+    "query": "Inspect this exported Figma variable JSON read-only. Report collections, modes, aliases, naming problems, coverage, and everything you could not observe.",
+    "should_trigger": true,
+    "expected_skill": "token-readonly-scan"
+  },
+  {
+    "query": "Create a machine-comparable current-state report for our token library from the MCP data, including a validated canonical snapshot and audit JSON.",
+    "should_trigger": true,
+    "expected_skill": "token-readonly-scan"
+  },
+  {
+    "query": "Review the scopes in our validated Figma token scan. Find ALL_SCOPES values and scopes that are too broad, too narrow, or incompatible with the variable type.",
+    "should_trigger": true,
+    "expected_skill": "token-scope-validation"
+  },
+  {
+    "query": "Our typography and accessibility variables have unusual scopes. Use the latest audit to classify safe proposals and high-risk holds without changing them.",
+    "should_trigger": true,
+    "expected_skill": "token-scope-validation"
+  },
+  {
+    "query": "Find semantic token gaps across disabled, selected, hover, pressed, focus, warning, and error states. Do not create any variables.",
+    "should_trigger": true,
+    "expected_skill": "token-semantic-gap-finding"
+  },
+  {
+    "query": "Several button and navigation components still use primitive colors and detached spacing values. Determine which recurring intents are real semantic gaps.",
+    "should_trigger": true,
+    "expected_skill": "token-semantic-gap-finding"
+  },
+  {
+    "query": "Gap DTA-GAP-014 was accepted. Prepare the exact Figma variable proposal with collection, modes, aliases, scopes, description, changelog, reference card, and verification.",
+    "should_trigger": true,
+    "expected_skill": "token-creation-proposal"
+  },
+  {
+    "query": "Propose a disabled foreground semantic token from the accepted gap record and latest validated scan. Show the exact approval preview but create nothing yet.",
+    "should_trigger": true,
+    "expected_skill": "token-creation-proposal"
+  },
+  {
+    "query": "Implement these design-token constants in our TypeScript theme and update the React components that consume them.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Build a new Button component and its variants in Figma using our existing design system variables.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Run an accessibility review of this checkout screen, including contrast, focus order, keyboard navigation, and screen-reader labels.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Rename these CSS custom properties throughout the repository and update all imports.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Delete unused Sass variables after checking references in the codebase.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Design a fresh color palette for our wellness brand and show accessible color combinations.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Explain in simple terms how Figma variable modes work. I am not asking for an audit.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Convert this Tokens Studio export to Style Dictionary format for Android and iOS builds.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Add one release note to our existing token changelog; no token inspection is needed.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Check whether this JSON file is syntactically valid and pretty-print it.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Bind these seven Figma node properties to the existing variables identified by the validated token audit. Preview every node and property before writing.",
+    "should_trigger": true,
+    "expected_skill": "token-binding-fix"
+  },
+  {
+    "query": "Rebind this component fill from the wrong semantic variable to the approved existing variable, with drift checks and independent verification.",
+    "should_trigger": true,
+    "expected_skill": "token-binding-fix"
+  },
+  {
+    "query": "Explain conceptually what a variable binding in Figma is; do not inspect or modify a file.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Before binding this FLOAT opacity token, compare its resolved consumer value with the disabled button's effective opacity and hold any scale mismatch.",
+    "should_trigger": true,
+    "expected_skill": "token-binding-fix"
+  },
+  {
+    "query": "Correct the existing local Figma variable opacity/disabled in one mode after showing consumer impact, exact rollback, and an approval preview.",
+    "should_trigger": true,
+    "expected_skill": "token-value-fix"
+  },
+  {
+    "query": "A variable has the wrong alias target in Dark mode. Prepare a separately approved value-fix pass with cycle checks and rollback.",
+    "should_trigger": true,
+    "expected_skill": "token-value-fix"
+  },
+  {
+    "query": "Change this JavaScript constant from 0.45 to 0.5 in the application source code.",
+    "should_trigger": false,
+    "expected_skill": null
+  },
+  {
+    "query": "Extend the Figma token changelog and reference cards safely without overlapping wrapped rows, then verify the complete documentation area.",
+    "should_trigger": true,
+    "expected_skill": "design-token-audit-orchestrator"
+  },
+  {
+    "query": "Audit the changelog and reference frames for layout structure, clipped content, overlap, and complete-area screenshot evidence without changing them.",
+    "should_trigger": true,
+    "expected_skill": "token-readonly-scan"
+  },
+  {
+    "query": "Resume my Figma token audit and show a visual high-level dashboard with where I am, what is complete, and the single next action.",
+    "should_trigger": true,
+    "expected_skill": "design-token-audit-orchestrator"
+  },
+  {
+    "query": "Validate this design-token workflow-state.json and reconcile it with the latest audit before continuing.",
+    "should_trigger": true,
+    "expected_skill": "design-token-audit-orchestrator"
+  },
+  {
+    "query": "Scan every observable Figma component property for recurring hardcoded values, including literals that match no current variable, without creating tokens.",
+    "should_trigger": true,
+    "expected_skill": "token-semantic-gap-finding"
+  },
+  {
+    "query": "Determine whether empty Figma variable scope arrays mean unrestricted use; do not assume they are ALL_SCOPES.",
+    "should_trigger": true,
+    "expected_skill": "token-scope-validation"
+  },
+  {
+    "query": "Audit every variable-bindable node property supported by the Figma adapter and prove eligible versus inspected coverage, including opacity and unmatched literals.",
+    "should_trigger": true,
+    "expected_skill": "token-readonly-scan"
+  },
+  {
+    "query": "Check ordinary Figma layer rotation and blend modes for visual consistency without treating them as variable-binding candidates.",
+    "should_trigger": false,
+    "expected_skill": null
+  }
+]

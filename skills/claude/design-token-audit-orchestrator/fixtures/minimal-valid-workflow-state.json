@@ -1,0 +1,53 @@
+{
+  "workflow_schema_version": "1.1.0",
+  "session_id": "demo-audit-2026-09-02",
+  "updated_at": "2026-09-02T20:30:00Z",
+  "source_audit_id": "audit-004",
+  "phase": "P3",
+  "current_step": "P3.3",
+  "pass_iteration": 1,
+  "status": "waiting_for_approval",
+  "completed_steps": [
+    "P1.1",
+    "P1.2",
+    "P1.3",
+    "P1.4",
+    "P2.1",
+    "P2.2",
+    "P2.3",
+    "P2.4",
+    "P3.1",
+    "P3.2"
+  ],
+  "skipped_steps": [],
+  "current_action": "Approve binding fix B03",
+  "next_action": "Apply B03 and verify it",
+  "pending_approval": {
+    "pass_id": "B03",
+    "accepted_commands": ["Go B03", "Hold B03"]
+  },
+  "phase1_assessments": {
+    "scope_validation": {
+      "status": "completed",
+      "artifact_id": "scope-validation-001",
+      "coverage": "complete",
+      "reason": null
+    },
+    "semantic_gap_finding": {
+      "status": "partial",
+      "artifact_id": "semantic-gap-001",
+      "coverage": "partial",
+      "reason": "External consumer files were not observable"
+    }
+  },
+  "open_items": {
+    "documentation_fixes": 0,
+    "scope_fixes": 0,
+    "token_creations": 0,
+    "value_fixes": 1,
+    "binding_fixes": 2,
+    "holds": 2
+  },
+  "blockers": [],
+  "last_verified_at": "2026-09-02T20:10:00Z"
+}

@@ -1,11 +1,11 @@
 ---
 name: token-scope-validation
-description: Validate Figma variable scopes for design tokens, including ALL_SCOPES, missing expected scopes, irrelevant scopes, type-scope mismatches, Typography exceptions, AX/accessibility exceptions, and documented special cases. Use after a validated read-only scan when the user asks to review, audit, clean, narrow, or propose fixes for token scopes. Start read-only, treat names as intent signals rather than proof, classify risk, and never change scopes without an exact approved preview.
+description: Validate Figma variable scopes after a valid read-only scan. Use for broad, narrow, missing, mismatched, Typography, accessibility, or ALL_SCOPES reviews.
 ---
 
 # Token Scope Validation
 
-Version: 0.4.0
+Version: 0.8.0
 
 Use this skill to validate whether token scopes match intended usage. `ALL_SCOPES` is only one finding type; the broader task is scope-intent validation.
 
@@ -15,11 +15,13 @@ Start from a validated read-only scan. Do not run scope validation if collection
 
 If the source scan is missing scope data, report scope validation as blocked or `not observable`.
 
+Record the source audit ID, scan timestamp, schema version, validation result, and relevant coverage. If any of these are missing, do not prepare a write-ready proposal.
+
 ## Rule
 
 Do not change scopes during validation. Produce findings and proposed scope changes only.
 
-Before any scope write, show a preview and wait for explicit approval.
+Approval applies only to the exact previewed scope pass. It does not approve another collection, token set, or documentation change.
 
 ## What To Validate
 
@@ -34,6 +36,8 @@ Check whether scopes are:
 - inconsistent with description, when descriptions are available
 - affected by Typography or AX/accessibility exceptions
 - accepted documented exceptions
+
+Treat the exact scope representation as evidence. An empty scope array is not interchangeable with explicit `ALL_SCOPES`; do not call it unrestricted unless the active adapter contract or observed Figma behavior establishes that meaning. If the semantics of an empty array are unavailable, classify them as `not observable` or `needs design decision` rather than inferring a mismatch.
 
 Use [references/scope-intent-heuristics.md](references/scope-intent-heuristics.md) for common intent signals and risk rules.
 
@@ -145,6 +149,25 @@ Verification:
 Please approve this exact scope-change pass before I make any changes.
 ```
 
+## Documentation Layout Safety
+
+For changelog rows, reference cards, and other repeating or dynamically sized documentation, use Auto Layout internally unless an observed approved convention requires another model. Preserve existing layout when extending it; converting absolute content to Auto Layout requires a separate node-exact preview of every affected descendant and geometry effect. Absolute coordinates remain valid for deliberate top-level placement, but never position a repeating row or card solely by adding an assumed fixed offset to its neighbor.
+
+Set `layoutMode` before dependent properties, use `AUTO`, `HUG`, and `FILL` only where the node and parent relationship support them, and avoid stretch/grow conflicts. Include layout and sizing properties in the preview. After the documentation write, re-read layout properties and bounds, verify zero overlap and clipping, and capture the complete affected area in a screenshot; screenshot review does not replace structural verification or the successor audit.
+
+## Approved Write Gate
+
+Before applying an approved scope change:
+
+1. Verify that changelog and reference documentation are ready for this pass.
+2. Re-read every affected token's ID, name, collection, type, scopes, modes, and relevant exception metadata.
+3. Compare the current records with the approved preview and source audit.
+4. Stop and request a revised preview if any affected record, count, scope, mode, exception, or consumer-risk assumption drifted.
+5. Apply only the approved scope values to the approved token IDs.
+6. Verify and document the pass before proposing another write.
+
+Never combine a scope write with variable-value, node-binding, naming, mode, description, orphan, architecture, or token-creation changes.
+
 ## Verification
 
 After an approved scope change, verify:
@@ -156,6 +179,10 @@ After an approved scope change, verify:
 - changelog row exists, if the library was changed
 - reference card or frame exists, if the library was changed
 - source scan and post-change verification are documented
+
+## Orchestrator Handoff
+
+When this skill runs inside the audit workflow, return a compact handoff with `skill`, `result_status`, `source_audit_id`, `produced_artifacts`, `blockers`, and `recommended_next_action`. Include a `phase1_assessment` record containing `status`, `artifact_id`, `coverage`, and `reason` for `scope_validation`. Report observed facts only. The orchestrator owns workflow-step completion and `workflow-state.json`; this skill must not advance the global dashboard itself.
 
 ## Final Response
 

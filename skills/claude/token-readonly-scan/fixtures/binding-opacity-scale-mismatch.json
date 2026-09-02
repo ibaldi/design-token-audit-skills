@@ -1,0 +1,30 @@
+{
+  "binding_findings": [
+    {
+      "finding_id": "DTA-BINDING-001",
+      "fingerprint": "binding|1:113|opacity|VariableID:1001:35",
+      "source_audit_id": "dta-fixture-minimal-valid",
+      "page_id": "1:50",
+      "node_id": "1:113",
+      "node_name": "Button / Primary / Disabled",
+      "node_type": "COMPONENT",
+      "property_path": "opacity",
+      "property_value_type": "FLOAT",
+      "current": {"kind": "literal", "value": 0.45},
+      "expected": {"kind": "variable", "variable_id": "VariableID:1001:35", "variable_name": "opacity/disabled", "variable_type": "FLOAT", "collection_id": "VariableCollectionId:1001:1", "relevant_mode_ids": ["1001:2"], "missing_mode_ids": [], "scopes": ["OPACITY"], "scope_compatibility": "compatible"},
+      "numeric_semantics": {"family": "opacity", "current_effective_value": 0.45, "target_variable_value": 0.45, "target_resolved_consumer_value": 0.0045, "expected_effective_value": 0.45, "tolerance": 0.000001, "equivalence": "mismatch", "resolution_method": "figma_resolve_for_consumer"},
+      "operation": "bind",
+      "confidence": "high",
+      "status": "held",
+      "evidence": [{"source": "figma_consumer_resolution", "detail": "The target resolves to 0.0045 for this node while the intended effective opacity is 0.45."}],
+      "risk": "Binding would change effective opacity from 45 percent to 0.45 percent and make the component nearly invisible.",
+      "limitations": []
+    }
+  ],
+  "binding_summary": {
+    "findings_total": 1,
+    "by_operation": {"bind": 1, "rebind": 0, "unbind": 0, "no_op": 0},
+    "by_status": {"proposed": 0, "held": 1, "not_actionable": 0, "verified": 0},
+    "write_candidates": 0
+  }
+}

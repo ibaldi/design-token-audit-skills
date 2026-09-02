@@ -1,5 +1,5 @@
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.5.0",
   "audit_id": "dta-fixture-minimal-valid",
   "audit_type": "figma_token_readonly_scan",
   "status": "complete_with_limitations",
@@ -98,6 +98,94 @@
     "all_scopes": 1,
     "unresolved_aliases": 0,
     "potential_orphan_candidates": 0
+  },
+  "documentation_readiness": {
+    "status": "not_observable",
+    "changelog": {
+      "status": "not_observable",
+      "node_ids": [],
+      "checks": {
+        "format": {"status": "not_observable", "observed": null, "evidence": []},
+        "sort_order": {"status": "not_observable", "observed": null, "evidence": []},
+        "author_values": {"status": "not_observable", "observed": null, "evidence": []},
+        "type_values": {"status": "not_observable", "observed": null, "evidence": []},
+        "layout_structure": {"status": "not_observable", "observed": null, "evidence": []},
+        "visual_integrity": {"status": "not_observable", "observed": null, "evidence": []}
+      },
+      "limitations": ["Fixture export contains no document text."]
+    },
+    "reference": {
+      "status": "not_observable",
+      "node_ids": [],
+      "checks": {
+        "location": {"status": "not_observable", "observed": null, "evidence": []},
+        "required_evidence": {"status": "not_observable", "observed": null, "evidence": []},
+        "layout_structure": {"status": "not_observable", "observed": null, "evidence": []},
+        "visual_integrity": {"status": "not_observable", "observed": null, "evidence": []}
+      },
+      "limitations": ["Fixture export contains no reference-frame evidence."]
+    },
+    "limitations": ["Documentation readiness cannot be established from this export."]
+  },
+  "derived_metrics": {
+    "local_inbound_aliases": {
+      "status": "complete",
+      "edges_total": 1,
+      "targets_with_inbound_aliases": 1,
+      "counts_by_target_id": {"VariableID:primitive-red": 1}
+    },
+    "description_patterns": {
+      "status": "complete",
+      "evaluated_variables": 2,
+      "patterns": [
+        {
+          "pattern_id": "usage-oriented-sentence",
+          "label": "Usage-oriented sentence",
+          "count": 1,
+          "confidence": "high",
+          "example_variable_ids": ["VariableID:primitive-red"]
+        }
+      ],
+      "unclassified": 1
+    },
+    "scopes_by_collection": {
+      "status": "complete",
+      "collections": {
+        "VariableCollectionId:semantic": {
+          "name": "Semantic",
+          "variables_total": 2,
+          "scope_counts": {"ALL_SCOPES": 1, "TEXT_FILL": 1},
+          "unobservable": 0
+        }
+      }
+    }
+  },
+  "property_coverage": {
+    "contract_version": "1.0.0",
+    "status": "not_observable",
+    "source": {
+      "adapter_id": "fixture-export",
+      "capability_basis": "structured_export",
+      "canonical_profile": null,
+      "capability_evidence": "Fixture export specification contains variable metadata but no document nodes"
+    },
+    "families": {
+      "simple_node_fields": {"support_status": "not_observable", "status": "not_observable", "declared_paths": [], "properties": [], "limitations": ["Document nodes are absent from the export."]},
+      "paints": {"support_status": "not_observable", "status": "not_observable", "declared_paths": [], "properties": [], "limitations": ["Document nodes are absent from the export."]},
+      "effects": {"support_status": "not_observable", "status": "not_observable", "declared_paths": [], "properties": [], "limitations": ["Document nodes are absent from the export."]},
+      "layout_grids": {"support_status": "not_observable", "status": "not_observable", "declared_paths": [], "properties": [], "limitations": ["Document nodes are absent from the export."]},
+      "typography": {"support_status": "not_observable", "status": "not_observable", "declared_paths": [], "properties": [], "limitations": ["Document nodes are absent from the export."]},
+      "component_properties": {"support_status": "not_observable", "status": "not_observable", "declared_paths": [], "properties": [], "limitations": ["Document nodes are absent from the export."]}
+    },
+    "excluded_non_bindable_properties": ["blendMode", "layoutSizingHorizontal", "layoutSizingVertical", "rotation"],
+    "limitations": ["Property traversal is not observable from this fixture export."]
+  },
+  "binding_findings": [],
+  "binding_summary": {
+    "findings_total": 0,
+    "by_operation": {"bind": 0, "rebind": 0, "unbind": 0, "no_op": 0},
+    "by_status": {"proposed": 0, "held": 0, "not_actionable": 0, "verified": 0},
+    "write_candidates": 0
   },
   "findings": [
     {

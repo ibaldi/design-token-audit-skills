@@ -1,0 +1,67 @@
+{
+  "contract_version": "1.0.0",
+  "proposal_id": "tvf-opacity-disabled-demo",
+  "source_audit_id": "dta-opacity-disabled-demo",
+  "source_audit_timestamp": "2026-09-02T16:00:00Z",
+  "file_key": "demo-file-key",
+  "read_only_evidence": true,
+  "status": "proposed",
+  "variable": {
+    "id": "VariableID:1001:35",
+    "name": "opacity/disabled",
+    "collection_id": "VariableCollectionId:1001:1",
+    "resolved_type": "FLOAT",
+    "remote": false
+  },
+  "changes": [
+    {
+      "change_id": "TVF-001",
+      "fingerprint": "value|VariableID:1001:35|ModeID:1001:2|set_literal|literal:45.0",
+      "mode_id": "ModeID:1001:2",
+      "mode_name": "Default",
+      "operation": "set_literal",
+      "current": {"kind": "literal", "value": 0.45},
+      "proposed": {"kind": "literal", "value": 45.0},
+      "alias_cycle_check": "not_applicable",
+      "numeric_semantics": {
+        "family": "opacity",
+        "current_stored_value": 0.45,
+        "proposed_stored_value": 45.0,
+        "effective_unit": "normalized_ratio",
+        "acceptable_effective_range": [0, 1],
+        "prediction_method": "sandbox_round_trip",
+        "prediction_status": "supported"
+      },
+      "consumer_impact": {
+        "local_alias_coverage": "complete",
+        "local_inbound_alias_count": 0,
+        "local_binding_coverage": "complete",
+        "local_bound_node_count": 3,
+        "external_consumer_coverage": "not_observable",
+        "consumers": [
+          {"node_id": "1:113", "property_path": "opacity", "before_effective_value": 0.0045, "expected_after_effective_value": 0.45, "tolerance": 0.000001},
+          {"node_id": "1:117", "property_path": "opacity", "before_effective_value": 0.0045, "expected_after_effective_value": 0.45, "tolerance": 0.000001},
+          {"node_id": "1:121", "property_path": "opacity", "before_effective_value": 0.0045, "expected_after_effective_value": 0.45, "tolerance": 0.000001}
+        ]
+      },
+      "risk": "high",
+      "limitations": ["External Figma files and code consumers were not observable in this synthetic fixture."],
+      "rollback": {"representation": {"kind": "literal", "value": 0.45}}
+    }
+  ],
+  "summary": {
+    "changes_total": 1,
+    "by_operation": {"set_alias": 0, "set_literal": 1},
+    "risk": "high",
+    "rollback_tuples": 1
+  },
+  "documentation": {
+    "changelog": "Fixed opacity/disabled stored value after consumer-resolution verification.",
+    "reference": "Opacity / Disabled value correction evidence card"
+  },
+  "verification": {
+    "consumer_resolution": "Re-read all three bound opacity properties and compare with 0.45 ± 0.000001.",
+    "visual_check": "Compare disabled button variants before and after the correction.",
+    "independent_scan": "Run token-readonly-scan with a new audit ID after verification."
+  }
+}
