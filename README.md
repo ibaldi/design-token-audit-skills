@@ -29,7 +29,7 @@ The goal is not only cleanup. The goal is a token library whose intent is readab
 
 The current MVP contains seven Claude-ready skills:
 
-Current skill package version: `0.8.0`
+Current skill package version: `0.8.1`
 
 | Skill | Purpose |
 | --- | --- |
@@ -45,7 +45,7 @@ Current skill package version: `0.8.0`
 
 The specialized MVP workflow covers read-only scanning, scope validation, semantic gap-finding, token creation proposals, approved scope, token-creation, existing-token value, and node-binding fixes, and baseline handoff.
 
-The read-only scan can surface architecture, mode, naming, orphan-candidate, and description observations. Version `0.8.0` does not provide separate validation or write workflows for those areas. Treat them as evidence-backed observations or hold items, not as completed specialized reviews or automatically actionable fixes.
+The read-only scan can surface architecture, mode, naming, orphan-candidate, and description observations. Version `0.8.1` does not provide separate validation or write workflows for those areas. Treat them as evidence-backed observations or hold items, not as completed specialized reviews or automatically actionable fixes.
 
 The read-only scan includes a concrete Figma execution contract. It defines the preferred read paths, required collection and variable fields, alias resolution, node-usage evidence, deterministic finding rules, and mandatory coverage reporting. Data that the available Figma access cannot expose must be reported as `not observable`, not inferred. The orchestrator ZIP now bundles the Phase 1 contracts and validators as well, so installing it alone does not silently lose the schema gate.
 
@@ -54,6 +54,10 @@ Every scan produces synchronized Markdown and audit JSON using schema `1.5.0`. T
 Property traversal uses contract `1.0.0` and accounts for simple node fields, paints, effects, layout grids, typography, and component properties. Each adapter-declared property reports eligible, inspected, bound, literal, and mixed/unsupported counts. This prevents a scan from claiming complete binding or hardcoded-value coverage merely because no findings were emitted. Rotation, blend mode, and Auto Layout sizing behavior are explicitly outside the current variable-binding profile.
 
 Documentation writes use dynamic-layout safeguards across changelog tables, reference cards, audit or baseline frames, matrices, and lists. Repeating content must not be positioned through assumed fixed offsets; every write is verified through layout properties, node bounds, overlap and clipping checks, and a screenshot of the complete affected area.
+
+Version `0.8.1` adds a structural-write recovery contract. Auto Layout wrappers are appended to a verified Auto Layout parent before child-only `FILL` sizing is applied, and empty scaffolding is verified before pre-existing nodes are reparented. Multi-step writes capture original parents and sibling indices, use adapter-supported undo checkpoints when available, and identify cleanup nodes by attempt-scoped IDs rather than names. A failed cleanup may remove only a subtree whose root and descendants were all created by that same attempt.
+
+Background-affecting binding changes now require a targeted relational-safety preflight. The pass discovers affected foreground content through rendered relationships, resolves effective colors and opacity per relevant mode, applies the applicable WCAG text or meaningful-graphic threshold, and reports current/proposed ratios and limitations without authorizing a second tuple. Version `0.8.1` does not add a global accessibility audit pass; that broader capability remains a separate future workflow decision.
 
 ### Process Navigator
 
@@ -96,7 +100,7 @@ https://github.com/ibaldi/design-token-audit-skills/releases
 
 Then upload the ZIP files to Claude as custom skills.
 
-The seven ZIP files in `dist/claude/` are the installable skill packages. A separately named `design-token-audit-skills-v0.8.0-complete.zip` is a maintainer/source archive of the whole project and must not be uploaded as a single skill.
+The seven ZIP files in `dist/claude/` are the installable skill packages. A separately named `design-token-audit-skills-v0.8.1-complete.zip` is a maintainer/source archive of the whole project and must not be uploaded as a single skill.
 
 ## Install In Claude
 
@@ -216,7 +220,7 @@ python3 skills/claude/design-token-audit-orchestrator/scripts/validate_workflow_
 Run all source, metadata, version, reference, fixture, and package checks with:
 
 ```bash
-python3 scripts/check_release.py --version 0.8.0
+python3 scripts/check_release.py --version 0.8.1
 ```
 
 ## Creating A GitHub Release
@@ -224,7 +228,7 @@ python3 scripts/check_release.py --version 0.8.0
 Use the release script:
 
 ```bash
-./scripts/release.sh v0.8.0
+./scripts/release.sh v0.8.1
 ```
 
 This rebuilds the Claude ZIP packages and creates a GitHub Release with the ZIPs attached as downloadable artifacts.

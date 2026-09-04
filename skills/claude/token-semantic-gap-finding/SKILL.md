@@ -5,7 +5,7 @@ description: Find evidence-backed semantic token gaps without creating tokens. U
 
 # Token Semantic Gap-finding
 
-Version: 0.8.0
+Version: 0.8.1
 
 Use this skill to identify semantic token gaps. This pass is read-only.
 
@@ -34,6 +34,14 @@ Run this assessment whenever the orchestrator reaches `P1.4`; it is not optional
 Group candidates by semantic intent and property semantics, not by raw value alone. Before classifying a gap, check suitable existing tokens in every observable relevant local or enabled library. Distinguish separate component consumers from variants or instances of the same component; repeated equal literals alone do not prove a system-level semantic gap.
 
 Use `partial` or `not_observable` when coverage is insufficient. Use `inapplicable` only after an attempted assessment establishes a concrete reason such as no in-scope components or no relevant bindable properties. "Not requested", "not mentioned", time constraints, and effort are never valid reasons.
+
+## Semantic Foreground Pairing Check
+
+When observable evidence shows that tokens serve as semantic backgrounds and the design system has an established foreground-on-background convention, compare peer semantic roles for missing foreground counterparts. Establish the convention from explicit documentation, multiple consistent pairs, or equally strong architecture evidence. One coincidental pair, a `FRAME_FILL` or `SHAPE_FILL` scope, or a token name containing `bg` is not sufficient by itself.
+
+Search all observable relevant local and enabled libraries because background and foreground roles may live in different collections or layers. Check semantic purpose, not substring similarity: a token for danger-colored text on a neutral surface does not automatically satisfy a foreground-on-danger-background role.
+
+Classify a missing counterpart as `Possible semantic gap / needs review` unless recurring active usage, clear owning-layer evidence, compatible mode/value semantics, and the existing confirmation rules support a confirmed gap. If emitted into the audit JSON, use the existing `other` category with stable `rule_id: missing-semantic-foreground-pairing`; do not add a new schema category in this release.
 
 ## What Counts As A Semantic Gap
 

@@ -5,7 +5,7 @@ description: Audit a Figma token library read-only with canonical snapshots. Use
 
 # Token Read-only Scan
 
-Version: 0.8.0
+Version: 0.8.1
 
 Use this skill to inspect a design token library without changing anything.
 

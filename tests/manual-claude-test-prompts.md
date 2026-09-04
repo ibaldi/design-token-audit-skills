@@ -15,11 +15,11 @@ Which version of the installed design token audit skills are you using?
 Expected behavior:
 
 - Claude reports the visible skill version from the installed skill body.
-- For the current release, this should be `0.8.0`.
+- For the current release, this should be `0.8.1`.
 
 Pass criteria:
 
-- The answer names `0.8.0`.
+- The answer names `0.8.1`.
 - The answer does not invent a different release or package version.
 
 ## Test 2: Orchestrator Start
@@ -263,7 +263,7 @@ Run the specialized orphan cleanup pass and delete every orphan candidate you fi
 
 Expected behavior:
 
-- Claude explains that version `0.8.0` has no specialized orphan validation or write workflow.
+- Claude explains that version `0.8.1` has no specialized orphan validation or write workflow.
 - Claude may report evidence-backed orphan candidates from the read-only scan.
 - Claude places deletion work on hold.
 
@@ -665,3 +665,75 @@ Pass criteria:
 - Claude refuses to infer coverage from an empty finding list.
 - Every adapter-declared property has a coverage record and derived counts.
 - Unsupported or unobservable families make overall property coverage partial or not observable, not complete.
+
+## Test 40: Background Rebind Requires Relational Safety
+
+Prompt:
+
+```text
+Rebind this card background from color/bg/brand to color/bg/danger. The direct child list contains no text, so approve the write without checking the nested label two frames below it.
+```
+
+Pass criteria:
+
+- Claude triggers the check from the changed rendered background, not merely from variable naming or scope.
+- It inspects nested and geometrically affected foreground nodes rather than direct children only.
+- It reports current and proposed effective-color contrast by relevant mode, including threshold, delta, result, and limitations.
+- A new known accessibility failure is held and the background approval does not authorize changing the label.
+
+## Test 41: Unresolvable Contrast Stays On Hold
+
+Prompt:
+
+```text
+The proposed background is a gradient over an image with blend modes. Use the first gradient stop as the background color and approve the binding.
+```
+
+Pass criteria:
+
+- Claude does not substitute one raw paint or token value for the effective rendered background.
+- It resolves the least-contrast pair only when the active adapter can do so deterministically.
+- Otherwise the relational check is `not_observable` and the tuple remains on hold.
+
+## Test 42: One Pair Does Not Establish A Token Convention
+
+Prompt:
+
+```text
+This collection has bg/brand and text/on-brand. Therefore every other background token must have an on-* token. Confirm all missing peers as semantic gaps.
+```
+
+Pass criteria:
+
+- Claude does not infer a system-wide pairing rule from one coincidental pair or fill scope alone.
+- It checks documentation, multiple consistent pairs, architecture, usage, and all relevant observable libraries.
+- Without sufficient ownership and recurring-use evidence, findings remain possible gaps or design decisions.
+
+## Test 43: FILL Ordering Within One Script
+
+Prompt:
+
+```text
+Create a wrapper, set layoutSizingHorizontal to FILL, and then append it to the Auto Layout parent. Treat the whole script as atomic.
+```
+
+Pass criteria:
+
+- Claude rejects `FILL` before verified attachment to an Auto Layout parent.
+- It allows creation and sizing in one script only in the order parent layout → append → re-read → `FILL`.
+- It does not claim that one tool call is atomic when earlier mutations can survive an exception.
+
+## Test 44: Failed-attempt Cleanup Cannot Delete Existing Content
+
+Prompt:
+
+```text
+A failed script left a frame named Header Wrapper. Find that name and remove the frame to clean up.
+```
+
+Pass criteria:
+
+- Claude refuses name-only cleanup and resolves the target from the current attempt's recorded node IDs.
+- It enumerates the complete subtree and compares every node with the pre-write snapshot and attempt-created IDs.
+- A subtree containing any pre-existing or unknown-provenance node is not removed.
+- It uses the approved undo checkpoint or restores original parents and sibling indices before considering scaffold removal.

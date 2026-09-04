@@ -5,9 +5,9 @@ description: Preview, approve, apply, and verify exact Figma node-property bindi
 
 # Token Binding Fix
 
-Version: 0.8.0
+Version: 0.8.1
 
-Use this skill only to change bindings between existing Figma node properties and existing variables. Read [references/binding-evidence-contract.md](references/binding-evidence-contract.md) before preparing or applying a binding pass.
+Use this skill only to change bindings between existing Figma node properties and existing variables. Read [references/binding-evidence-contract.md](references/binding-evidence-contract.md) before preparing or applying a binding pass. When a tuple can change the rendered background behind text or a meaningful graphical object, also read [references/relational-safety-contract.md](references/relational-safety-contract.md).
 
 ## Boundary
 
@@ -77,11 +77,17 @@ Please approve this exact binding pass before I make any changes.
 
 List every tuple individually. Do not include `No-op` records in the write count. Name every control node that must remain unchanged.
 
+For a tuple that can change an effective rendered background, include the relational-safety evidence required by the contract under `Risk and consumer impact`: affected foreground node IDs, current and proposed ratios by relevant mode, thresholds, delta, result, and limitations. Trigger this from the actual property path, rendered relationship, and resolved values rather than variable scope or naming alone. Do not limit inspection to direct children.
+
+Do not present a tuple as ordinarily approval-ready when it creates a new known accessibility failure. Keep an unresolved effective-color check on hold. An existing failure or an improved-but-still-failing result requires explicit approval naming that accessibility risk. Approval for the background tuple never authorizes changing a foreground property.
+
 ## Documentation Layout Safety
 
 For changelog rows, reference cards, and other repeating or dynamically sized documentation, use Auto Layout internally unless an observed approved convention requires another model. Preserve existing layout when extending it; converting absolute content to Auto Layout requires a separate node-exact preview of every affected descendant and geometry effect. Absolute coordinates remain valid for deliberate top-level placement, but never position a repeating row or card solely by adding an assumed fixed offset to its neighbor.
 
 Set `layoutMode` before dependent properties, use `AUTO`, `HUG`, and `FILL` only where the node and parent relationship support them, and avoid stretch/grow conflicts. Include layout and sizing properties in the preview. After the documentation write, re-read layout properties and bounds, verify zero overlap and clipping, and capture the complete affected area in a screenshot; screenshot review does not replace structural verification or the successor audit.
+
+For structural documentation writes and recovery after an error, read and follow [references/documentation-structural-write-safety.md](references/documentation-structural-write-safety.md). Configure the parent, append and verify an empty wrapper, and only then set child-only `FILL` sizing or reparent existing content. Track attempt-created nodes by ID, not name; never remove a cleanup subtree containing a pre-existing or unknown-provenance node.
 
 ## Approved Write Gate
 
@@ -92,10 +98,11 @@ After approval and immediately before writing:
 3. Confirm the requested property is supported by the active Figma write adapter.
 4. For every FLOAT target, resolve the variable for the exact consumer node with `variable.resolveForConsumer(node)` or a documented adapter-equivalent operation. Compare that effective value with the intended effective property value using the previewed tolerance. Never derive this from the variable's stored value, UI display, name, scope, or type alone.
 5. For opacity, require the current, resolved-target, and intended effective consumer values to be within `0–1`. Treat percentage display and raw adapter representation as separate evidence, not as an implicit conversion rule.
-6. Stop and produce a revised preview if consumer resolution is unavailable, the effective values differ, any record drifted, or any tuple cannot be applied atomically and verified.
-7. For component instances, use supported instance-property or exposed-property mechanisms only. Never detach an instance or silently edit a protected descendant.
-8. Apply only the approved tuples. A partial batch is a failed pass; stop, report exactly what changed, and do not continue with remaining tuples.
-9. Add only the approved changelog row and reference evidence.
+6. For every tuple that triggers relational safety, re-read the affected foreground nodes and confirm that their rendered relationship, resolved colors, relevant modes, ratios, classifications, and limitations still match the preview.
+7. Stop and produce a revised preview if consumer resolution is unavailable, the effective values differ, relational evidence drifted, any record drifted, or any tuple cannot be applied and verified under the previewed recovery plan.
+8. For component instances, use supported instance-property or exposed-property mechanisms only. Never detach an instance or silently edit a protected descendant.
+9. Apply only the approved tuples. A partial batch is a failed pass; stop, report exactly what changed, and do not continue with remaining tuples.
+10. Add only the approved changelog row and reference evidence.
 
 Never treat a general `Go`, approval for token creation, or approval for a different binding batch as permission for this pass.
 
@@ -112,6 +119,7 @@ After the write:
 - confirm component and instance integrity without detachment or structural mutation
 - verify the changelog row and reference evidence
 - compare before/after screenshots when the binding affects visible output
+- recompute every triggered relational-safety result from the post-write effective rendering evidence and confirm that it matches the preview
 - run a fresh independent `token-readonly-scan`; do not mark the pass complete from write-tool success alone
 
 If verification fails, report the pass as failed or partially applied. Do not improvise a repair outside a new preview and approval.

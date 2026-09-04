@@ -5,7 +5,7 @@ description: Coordinate a safe Figma token audit through approved scope, token-c
 
 # Design Token Audit Orchestrator
 
-Version: 0.8.0
+Version: 0.8.1
 
 Use this skill to run the full audit workflow step by step.
 
@@ -119,6 +119,10 @@ Apply this to changelog tables, reference cards, audit or baseline frames, matri
 - Preserve the observed layout model when extending existing documentation. Converting an existing absolute-positioned structure to Auto Layout is a separate structural change: preview the container, every affected descendant, all layout-property changes, and expected position and size effects before approval.
 - Absolute `x` and `y` remain allowed for deliberate top-level canvas placement or an approved existing convention. Never place a new repeating row or card solely by incrementing a previous element's coordinate by an assumed fixed offset.
 - Include the exact layout model and sizing properties in the node-exact preview. After every documentation write, re-read layout properties and bounds, verify zero overlap and clipped content, and capture a screenshot of the complete affected documentation area. Screenshot review does not replace the successor audit and JSON validation.
+
+Before any approved documentation write that creates wrappers, reparents existing nodes, converts a layout model, or cleans up a failed attempt, read and follow [references/documentation-structural-write-safety.md](references/documentation-structural-write-safety.md). In particular, configure the parent, append and verify an empty wrapper, and only then apply child-only `FILL` sizing or move pre-existing content. A single tool call is not atomic when an exception can leave earlier mutations applied.
+
+Cleanup after a failed attempt must use the attempt's recorded node IDs and a complete subtree inspection, never a node name alone. Do not remove a subtree containing any pre-existing or unknown-provenance node. Use an adapter-supported undo checkpoint when available; otherwise restore captured parents and sibling indices before considering removal of attempt-created scaffolding.
 
 When no existing author, type, row, or reference-card convention is observable, do not present an invented convention as an observed fact. State the proposed convention as a design decision and obtain explicit approval for it as part of the exact preview.
 

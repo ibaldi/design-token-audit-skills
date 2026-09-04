@@ -1,6 +1,18 @@
 # Changelog
 
-## 0.8.0 - 2026-09-03
+## 0.8.1 - 2026-09-04
+
+- Added a targeted relational-safety preflight for binding changes that alter the effective rendered background behind text or meaningful graphical objects.
+- Required foreground discovery from rendered geometry and nested/overlapping nodes rather than direct children or variable scopes alone.
+- Added mode-specific effective-color, alpha-compositing, WCAG threshold, delta, limitation, and hold requirements without authorizing a second binding tuple.
+- Added an evidence-constrained semantic foreground-pairing check; one naming pair or fill scope alone cannot confirm a token gap.
+- Kept contrast findings in the existing `accessibility` category and pairing findings in `other`, preserving audit schema `1.5.0` and the two-pass Phase-1 workflow contract `1.1.0`.
+- Added documentation structural-write safety contract `1.0.0` across the orchestrator and all documentation-writing skills.
+- Required parent configuration and append verification before child-only `FILL` sizing, with empty-scaffold verification before reparenting existing content.
+- Added attempt-ID and stable-node-ID recovery, capability-based undo checkpoints, original parent/index capture, subtree provenance inspection, and a hard prohibition on name-only cleanup deletion.
+- Clarified that one script or tool call is not atomic when an exception can leave earlier Figma mutations applied.
+
+## 0.8.0 - 2026-09-02
 
 - Updated the read-only audit schema to `1.5.0` with mandatory property traversal coverage.
 - Added property traversal contract `1.0.0` covering simple node fields, paints, effects, layout grids, typography, and component properties.
@@ -11,7 +23,6 @@
 - Preserved unmatched literals for the mandatory hardcoded-value sweep and propagated incomplete property coverage to semantic gap-finding.
 - Explicitly excluded rotation, blend mode, and Auto Layout sizing behavior from the current variable-binding profile.
 - Added validator regressions for opacity coverage, missing records, invalid counts, incomplete official profiles, and uncovered binding findings.
-- Limited release-source hygiene checks to files that can enter the published packages, so unrelated local workspace artifacts do not block a valid release.
 
 ## 0.7.1 - 2026-09-02
 

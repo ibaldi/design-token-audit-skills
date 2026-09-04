@@ -5,7 +5,7 @@ description: Preview, approve, apply, and verify exact value corrections to exis
 
 # Token Value Fix
 
-Version: 0.8.0
+Version: 0.8.1
 
 Use this skill only to correct values of existing local Figma variables. Read [references/value-evidence-contract.md](references/value-evidence-contract.md) and validate the evidence JSON with `python3 scripts/validate_value_fix.py <proposal.json>` before presenting a write-ready preview.
 
@@ -72,6 +72,8 @@ Please approve these exact value tuples and their exact rollback values before I
 For changelog rows, reference cards, and other repeating or dynamically sized documentation, use Auto Layout internally unless an observed approved convention requires another model. Preserve existing layout when extending it; converting absolute content to Auto Layout requires a separate node-exact preview of every affected descendant and geometry effect. Absolute coordinates remain valid for deliberate top-level placement, but never position a repeating row or card solely by adding an assumed fixed offset to its neighbor.
 
 Set `layoutMode` before dependent properties, use `AUTO`, `HUG`, and `FILL` only where the node and parent relationship support them, and avoid stretch/grow conflicts. Include layout and sizing properties in the preview. After the documentation write, re-read layout properties and bounds, verify zero overlap and clipping, and capture the complete affected area in a screenshot; screenshot review does not replace structural verification or the successor audit.
+
+For structural documentation writes and recovery after an error, read and follow [references/documentation-structural-write-safety.md](references/documentation-structural-write-safety.md). Configure the parent, append and verify an empty wrapper, and only then set child-only `FILL` sizing or reparent existing content. Track attempt-created nodes by ID, not name; never remove a cleanup subtree containing a pre-existing or unknown-provenance node.
 
 ## Approved Write Gate
 

@@ -28,9 +28,11 @@ ORCHESTRATOR_SHARED_FILES = (
     "scripts/validate_audit_json.py",
     "scripts/validate_snapshot.py",
 )
-RELEASE_SOURCE_DIRS = tuple(path for path in SKILLS.iterdir() if path.is_dir()) + (
-    ROOT / "scripts",
-    ROOT / "tests",
+DOCUMENTATION_WRITE_SKILLS = (
+    "token-creation-proposal",
+    "token-scope-validation",
+    "token-binding-fix",
+    "token-value-fix",
 )
 
 
@@ -89,10 +91,9 @@ def check_versions(version: str, errors: list[str]) -> None:
 
 
 def check_local_links(errors: list[str]) -> None:
-    markdown_files = [ROOT / "README.md", ROOT / "CHANGELOG.md"]
-    for source_dir in RELEASE_SOURCE_DIRS:
-        markdown_files.extend(source_dir.rglob("*.md"))
-    for markdown in markdown_files:
+    for markdown in ROOT.rglob("*.md"):
+        if "dist" in markdown.parts:
+            continue
         text = markdown.read_text(encoding="utf-8")
         for target in LINK_RE.findall(text):
             if target.startswith(("http://", "https://", "#", "mailto:")):
@@ -128,10 +129,11 @@ def check_trigger_evals(errors: list[str]) -> None:
 
 
 def check_generated_files(errors: list[str]) -> None:
-    for source_dir in RELEASE_SOURCE_DIRS:
-        for path in source_dir.rglob("*"):
-            if path.name == "__pycache__" or path.name == ".DS_Store" or path.suffix == ".pyc":
-                errors.append(f"{path.relative_to(ROOT)}: generated file must not enter a package")
+    for path in ROOT.rglob("*"):
+        if "dist" in path.parts:
+            continue
+        if path.name == "__pycache__" or path.name == ".DS_Store" or path.suffix == ".pyc":
+            errors.append(f"{path.relative_to(ROOT)}: generated file must not enter a package")
 
 
 def check_orchestrator_bundle(errors: list[str]) -> None:
@@ -149,9 +151,23 @@ def check_orchestrator_bundle(errors: list[str]) -> None:
 def check_binding_release(errors: list[str]) -> None:
     binding = SKILLS / "token-binding-fix"
     evidence = binding / "references" / "binding-evidence-contract.md"
+    relational = binding / "references" / "relational-safety-contract.md"
     fixture_path = SKILLS / "token-readonly-scan" / "fixtures" / "binding-findings-a00-a07.json"
     if not binding.is_dir() or not evidence.is_file():
         errors.append("token-binding-fix: skill or binding evidence contract is missing")
+    if not relational.is_file():
+        errors.append("token-binding-fix: relational safety contract is missing")
+    else:
+        relational_text = relational.read_text(encoding="utf-8")
+        for phrase in (
+            "Do not limit discovery to direct children.",
+            "normal text: `4.5:1`",
+            "meaningful graphical objects and UI indicators: `3:1`",
+            "Do not present a tuple as ordinarily approval-ready when it creates a new known accessibility failure.",
+            "Do not generate speculative coupling warnings",
+        ):
+            if phrase not in relational_text:
+                errors.append(f"token-binding-fix relational safety: missing invariant {phrase!r}")
     try:
         fixture = json.loads(fixture_path.read_text(encoding="utf-8"))
     except (OSError, json.JSONDecodeError) as exc:
@@ -221,12 +237,37 @@ def check_documentation_layout_release(errors: list[str]) -> None:
                 errors.append(f"minimal audit fixture: documentation_readiness.{component}.checks.{required} is missing")
 
     safety_phrase = "never position a repeating row or card solely by adding an assumed fixed offset"
-    for skill_name in (
-        "token-creation-proposal", "token-scope-validation", "token-binding-fix", "token-value-fix",
-    ):
+    recovery_reference = "references/documentation-structural-write-safety.md"
+    canonical_recovery = SKILLS / "design-token-audit-orchestrator" / recovery_reference
+    if not canonical_recovery.is_file():
+        errors.append("design-token-audit-orchestrator: documentation structural-write safety contract is missing")
+        canonical_bytes = None
+    else:
+        canonical_bytes = canonical_recovery.read_bytes()
+    for skill_name in DOCUMENTATION_WRITE_SKILLS:
         text = (SKILLS / skill_name / "SKILL.md").read_text(encoding="utf-8").lower()
         if safety_phrase not in text:
             errors.append(f"skills/claude/{skill_name}/SKILL.md: missing documentation layout safety invariant")
+        if recovery_reference.lower() not in text:
+            errors.append(f"skills/claude/{skill_name}/SKILL.md: missing structural-write safety reference")
+        recovery_path = SKILLS / skill_name / recovery_reference
+        if not recovery_path.is_file():
+            errors.append(f"skills/claude/{skill_name}/{recovery_reference}: missing")
+        elif canonical_bytes is not None and recovery_path.read_bytes() != canonical_bytes:
+            errors.append(f"skills/claude/{skill_name}/{recovery_reference}: differs from orchestrator contract")
+
+    if canonical_bytes is not None:
+        recovery_text = canonical_bytes.decode("utf-8")
+        for phrase in (
+            "Names are descriptive evidence only and must never establish ownership.",
+            "figma.commitUndo()",
+            "figma.triggerUndo()",
+            "Only then set child-only values",
+            "Do not describe a multi-mutation script as atomic",
+            "Remove a cleanup subtree only when its root and every descendant were created by the current attempt.",
+        ):
+            if phrase not in recovery_text:
+                errors.append(f"documentation structural-write safety: missing invariant {phrase!r}")
 
 
 def check_process_navigator_release(errors: list[str]) -> None:
@@ -322,6 +363,8 @@ def check_safety_invariants(errors: list[str]) -> None:
             "## Mandatory Hardcoded-value Sweep",
             "repeated equal literals alone do not prove a system-level semantic gap",
             "do not present it as a write-ready confirmed gap",
+            "One coincidental pair, a `FRAME_FILL` or `SHAPE_FILL` scope, or a token name containing `bg` is not sufficient by itself.",
+            "rule_id: missing-semantic-foreground-pairing",
         ),
         SKILLS / "token-scope-validation" / "SKILL.md": (
             "An empty scope array is not interchangeable with explicit `ALL_SCOPES`",
@@ -334,6 +377,9 @@ def check_safety_invariants(errors: list[str]) -> None:
             "variable.resolveForConsumer(node)",
             "consumer resolution is unavailable",
             "Changing an existing variable value is outside this skill",
+            "Do not limit inspection to direct children.",
+            "creates a new known accessibility failure",
+            "Approval for the background tuple never authorizes changing a foreground property.",
         ),
         SKILLS / "token-readonly-scan" / "scripts" / "validate_audit_json.py": (
             "proposed FLOAT binding requires observable consumer resolution",
