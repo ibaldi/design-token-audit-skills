@@ -28,6 +28,7 @@ ORCHESTRATOR_SHARED_FILES = (
     "scripts/validate_audit_json.py",
     "scripts/validate_snapshot.py",
 )
+FIGMA_SKILL = ROOT / "skills" / "figma" / "ibaldi-design-token-audit.md"
 DOCUMENTATION_WRITE_SKILLS = (
     "token-creation-proposal",
     "token-scope-validation",
@@ -126,6 +127,46 @@ def check_trigger_evals(errors: list[str]) -> None:
     for index, item in enumerate(evals):
         if not isinstance(item, dict) or not isinstance(item.get("query"), str) or not item["query"].strip():
             errors.append(f"{path}[{index}]: query must be a non-empty string")
+
+
+def check_figma_companion(errors: list[str]) -> None:
+    if not FIGMA_SKILL.is_file():
+        errors.append("skills/figma/ibaldi-design-token-audit.md: Figma companion is missing")
+        return
+    try:
+        metadata = parse_frontmatter(FIGMA_SKILL)
+    except (OSError, ValueError) as exc:
+        errors.append(f"{FIGMA_SKILL.relative_to(ROOT)}: {exc}")
+        return
+    if metadata.get("name") != "ibaldi-design-token-audit":
+        errors.append("Figma companion: name must be 'ibaldi-design-token-audit'")
+    description = metadata.get("description", "")
+    if not description or len(description) > 1024:
+        errors.append("Figma companion: description must contain 1-1024 characters")
+    text = FIGMA_SKILL.read_text(encoding="utf-8")
+    if len(text.splitlines()) > 500:
+        errors.append("Figma companion: standalone Markdown must stay at or below 500 lines")
+    markdown_files = sorted((ROOT / "skills" / "figma").rglob("*.md"))
+    if markdown_files != [FIGMA_SKILL]:
+        errors.append("skills/figma: expected exactly one standalone Markdown skill")
+    for target in LINK_RE.findall(text):
+        if not target.startswith(("http://", "https://", "#")):
+            errors.append(f"Figma companion: local file reference {target!r} is not standalone")
+    for phrase in (
+        "Figma port version: `0.1.0`",
+        "Source suite version: `0.8.1`",
+        "Start read-only.",
+        "show an exact preview and wait for explicit approval",
+        "Always run both scope validation and semantic-gap assessment",
+        "A general `Go` applies only to the currently displayed preview.",
+        "Do not limit inspection to direct children.",
+        "One tool call or script is not atomic",
+        "Remove it only when its root and every descendant were created by the same attempt.",
+        "Tool success alone is not verification.",
+        "Do not claim machine-validated audit JSON",
+    ):
+        if phrase not in text:
+            errors.append(f"Figma companion: missing invariant {phrase!r}")
 
 
 def check_generated_files(errors: list[str]) -> None:
@@ -452,6 +493,7 @@ def main() -> int:
     check_versions(version, errors)
     check_local_links(errors)
     check_trigger_evals(errors)
+    check_figma_companion(errors)
     check_generated_files(errors)
     check_orchestrator_bundle(errors)
     check_binding_release(errors)

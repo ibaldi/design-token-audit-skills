@@ -41,6 +41,22 @@ Current skill package version: `0.8.1`
 | `token-binding-fix` | Applies exact, separately approved node-property binding changes to existing variables. |
 | `token-value-fix` | Corrects exact mode values of existing local variables with consumer-impact evidence and pre-approved rollback. |
 
+### Figma Agent Companion
+
+The repository also includes a Figma-native companion skill:
+
+```text
+skills/figma/ibaldi-design-token-audit.md
+```
+
+Current Figma port version: `0.1.0`
+
+Source Claude suite version: `0.8.1`
+
+This is one standalone Markdown file for the Figma agent and Figma Make. It preserves the phased audit workflow, Process Navigator, exact preview and approval gates, supported fix-pass boundaries, contrast-aware binding checks, documentation safety, recovery rules, and post-write verification.
+
+The Figma companion is not technically equivalent to the Claude suite: Figma custom skills cannot bundle the Python validators, schemas, fixtures, or supporting reference files. It must not claim machine-validated audit JSON. Use the Claude suite when deterministic contract validation or adapter-independent evidence is required.
+
 ### MVP Scope Boundary
 
 The specialized MVP workflow covers read-only scanning, scope validation, semantic gap-finding, token creation proposals, approved scope, token-creation, existing-token value, and node-binding fixes, and baseline handoff.
@@ -98,7 +114,7 @@ For normal use, download the latest ZIP files from GitHub Releases:
 https://github.com/ibaldi/design-token-audit-skills/releases
 ```
 
-Then upload the ZIP files to Claude as custom skills.
+Then upload the ZIP files to Claude as custom skills. For the Figma agent, download the standalone `ibaldi-design-token-audit.md` release asset instead.
 
 The seven ZIP files in `dist/claude/` are the installable skill packages. A separately named `design-token-audit-skills-v0.8.1-complete.zip` is a maintainer/source archive of the whole project and must not be uploaded as a single skill.
 
@@ -117,6 +133,22 @@ token-creation-proposal.zip
 token-binding-fix.zip
 token-value-fix.zip
 ```
+
+## Install In Figma
+
+Download:
+
+```text
+ibaldi-design-token-audit.md
+```
+
+In a Figma agent chat or Figma Make, select **Skills → Add skill → Upload a file**, upload the Markdown file, review its name and instructions, and add it. Invoke it with:
+
+```text
+/ibaldi-design-token-audit
+```
+
+Start in a duplicated sandbox file before using it with a production token library.
 
 ## Recommended First Test
 

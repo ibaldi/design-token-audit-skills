@@ -1,5 +1,12 @@
 # Changelog
 
+## Unreleased
+
+- Added Figma-native companion skill `0.1.0` as one uploadable Markdown file derived from Claude suite `0.8.1`.
+- Preserved the read-only-first workflow, Process Navigator, exact approvals, supported pass boundaries, relational contrast checks, structural recovery safety, and independent verification.
+- Explicitly prevented the Figma companion from claiming machine-validated JSON or technical equivalence with the multi-file Claude suite.
+- Added standalone-file validation and manual Figma-agent regression prompts.
+
 ## 0.8.1 - 2026-09-04
 
 - Added a targeted relational-safety preflight for binding changes that alter the effective rendered background behind text or meaningful graphical objects.

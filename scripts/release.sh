@@ -11,6 +11,7 @@ VERSION="$1"
 PACKAGE_VERSION="${VERSION#v}"
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 DIST_DIR="$ROOT_DIR/dist/claude"
+FIGMA_SKILL="$ROOT_DIR/skills/figma/ibaldi-design-token-audit.md"
 
 cd "$ROOT_DIR"
 
@@ -23,6 +24,6 @@ python3 ./scripts/check_release.py --version "$PACKAGE_VERSION"
 
 ./scripts/build-claude-zips.sh
 
-gh release create "$VERSION" "$DIST_DIR"/*.zip \
+gh release create "$VERSION" "$DIST_DIR"/*.zip "$FIGMA_SKILL" \
   --title "$VERSION" \
-  --notes "Claude skill ZIP packages for $VERSION."
+  --notes "Claude skill ZIP packages for $VERSION plus the Figma-native companion Markdown file."
