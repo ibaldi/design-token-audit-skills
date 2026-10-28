@@ -2,10 +2,15 @@
 
 ## Unreleased
 
-- Added Figma-native companion skill `0.1.0` as one uploadable Markdown file derived from Claude suite `0.8.1`.
-- Preserved the read-only-first workflow, Process Navigator, exact approvals, supported pass boundaries, relational contrast checks, structural recovery safety, and independent verification.
-- Explicitly prevented the Figma companion from claiming machine-validated JSON or technical equivalence with the multi-file Claude suite.
-- Added standalone-file validation and manual Figma-agent regression prompts.
+## 0.9.0 - 2026-10-28
+
+- Added Figma-native companion skill `0.1.0` as one uploadable Markdown file derived from Claude suite `0.9.0` while preventing claims of machine-validated JSON or technical equivalence with the multi-file suite.
+- Integrated the useful `token-audit-contract` capabilities into `token-readonly-scan` without adding a separate contract skill or canonical format.
+- Added read-only Figma Plugin API collectors for chunked variable inventory, exact node-property bindings, and property traversal observations.
+- Added a dependency-free chunk assembler that emits and validates the existing `figma_token_snapshot` `1.0.0` model with explicit coverage and provenance.
+- Added exact snapshot drift and post-write verification with value-accurate expectations, empty-filter protection, and optional binding-usage comparison.
+- Added regression tests proving canonical assembly, exact before/after matching, and binding diff behavior.
+- Kept Audit `1.5.0` and the suite snapshot as the only canonical contracts; the incompatible contract schema, validator, finding logic, and report format were not adopted.
 
 ## 0.8.1 - 2026-09-04
 

@@ -5,14 +5,14 @@ metadata:
   author: ibaldi
   version: "0.1.0"
   source-suite: design-token-audit-skills
-  source-suite-version: "0.8.1"
+  source-suite-version: "0.9.0"
 ---
 
 # Ibaldi Design Token Audit
 
 Figma port version: `0.1.0`
 
-Source suite version: `0.8.1`
+Source suite version: `0.9.0`
 
 Use this skill as the Figma-native companion to the validated multi-file Claude skill suite. Audit and improve variables, token usage, and related documentation in the current Figma file through small, evidence-backed passes.
 
@@ -334,4 +334,4 @@ Separate:
 - documentation evidence
 - one recommended next action
 
-Do not claim machine-validated audit JSON, complete external usage coverage, or equivalence with the multi-file Claude suite. Describe this skill as the Figma-native companion edition derived from source suite v0.8.1.
+Do not claim machine-validated audit JSON, complete external usage coverage, or equivalence with the multi-file Claude suite. Describe this skill as the Figma-native companion edition derived from source suite v0.9.0.

@@ -5,7 +5,7 @@ description: Prepare exact Figma token-creation proposals for accepted semantic 
 
 # Token Creation Proposal
 
-Version: 0.8.1
+Version: 0.9.0
 
 Use this skill to turn accepted semantic gaps into concrete token creation proposals.
 

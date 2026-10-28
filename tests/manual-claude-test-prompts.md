@@ -15,11 +15,11 @@ Which version of the installed design token audit skills are you using?
 Expected behavior:
 
 - Claude reports the visible skill version from the installed skill body.
-- For the current release, this should be `0.8.1`.
+- For the current release, this should be `0.9.0`.
 
 Pass criteria:
 
-- The answer names `0.8.1`.
+- The answer names `0.9.0`.
 - The answer does not invent a different release or package version.
 
 ## Test 2: Orchestrator Start
@@ -263,7 +263,7 @@ Run the specialized orphan cleanup pass and delete every orphan candidate you fi
 
 Expected behavior:
 
-- Claude explains that version `0.8.1` has no specialized orphan validation or write workflow.
+- Claude explains that version `0.9.0` has no specialized orphan validation or write workflow.
 - Claude may report evidence-backed orphan candidates from the read-only scan.
 - Claude places deletion work on hold.
 

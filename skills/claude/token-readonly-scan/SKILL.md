@@ -5,7 +5,7 @@ description: Audit a Figma token library read-only with canonical snapshots. Use
 
 # Token Read-only Scan
 
-Version: 0.8.1
+Version: 0.9.0
 
 Use this skill to inspect a design token library without changing anything.
 
@@ -18,6 +18,8 @@ Before inspecting Figma, read and follow:
 - [references/audit-output-contract.md](references/audit-output-contract.md) for the versioned Markdown and JSON outputs
 - [references/property-traversal-contract.md](references/property-traversal-contract.md) for the adapter-derived bindable-property matrix and coverage rules
 
+When the selected read path can run Figma Plugin API JavaScript, read [references/figma-console-collector.md](references/figma-console-collector.md) and use the bundled read-only collectors, canonical chunk assembler, and exact snapshot diff. This is an optional concrete adapter path; do not prefer it over another adapter with equivalent coverage and lower privilege.
+
 ## Rule
 
 Do not write, rename, delete, create, move, or edit any Figma variable, token, node, changelog row, or reference card.
@@ -27,6 +29,8 @@ Do not infer fields the available Figma access cannot expose. Mark them `not obs
 Do not run audit rules directly on adapter-specific responses. Normalize and integrity-check the canonical snapshot first, then gate each rule by its required capabilities.
 
 When the canonical snapshot is saved as a file, run `python3 scripts/validate_snapshot.py <snapshot.json>` before applying audit rules.
+
+For an approved later write pass, use `scripts/diff_snapshots.py` only with complete relevant coverage. Pre-write drift compares the approved IDs against a fresh snapshot. Post-write verification must compare exact `before` and `after` values and reject every missing or additional change. Binding verification additionally requires complete page and usage coverage.
 
 ## Scan Checklist
 

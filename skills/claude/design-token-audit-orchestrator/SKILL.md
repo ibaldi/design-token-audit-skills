@@ -5,7 +5,7 @@ description: Coordinate a safe Figma token audit through approved scope, token-c
 
 # Design Token Audit Orchestrator
 
-Version: 0.8.1
+Version: 0.9.0
 
 Use this skill to run the full audit workflow step by step.
 

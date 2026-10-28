@@ -5,7 +5,7 @@ description: Find evidence-backed semantic token gaps without creating tokens. U
 
 # Token Semantic Gap-finding
 
-Version: 0.8.1
+Version: 0.9.0
 
 Use this skill to identify semantic token gaps. This pass is read-only.
 

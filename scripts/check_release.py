@@ -154,7 +154,7 @@ def check_figma_companion(errors: list[str]) -> None:
             errors.append(f"Figma companion: local file reference {target!r} is not standalone")
     for phrase in (
         "Figma port version: `0.1.0`",
-        "Source suite version: `0.8.1`",
+        "Source suite version: `0.9.0`",
         "Start read-only.",
         "show an exact preview and wait for explicit approval",
         "Always run both scope validation and semantic-gap assessment",
@@ -442,9 +442,45 @@ def check_safety_invariants(errors: list[str]) -> None:
                 errors.append(f"{path.relative_to(ROOT)}: missing safety invariant {phrase!r}")
 
 
+def check_collector_release(errors: list[str]) -> None:
+    scan = SKILLS / "token-readonly-scan"
+    required = {
+        scan / "references" / "figma-console-collector.md": (
+            "The observation sidecar is audit evidence, not a second canonical snapshot.",
+            "Do not reduce expectations to IDs and change labels.",
+        ),
+        scan / "scripts" / "collect_figma_variables.js": (
+            "READ ONLY",
+            'chunk_type: "figma_token_variables"',
+        ),
+        scan / "scripts" / "collect_figma_properties.js": (
+            "READ ONLY",
+            'chunk_type: "figma_token_properties"',
+            '"textRangeFills[*].color"',
+        ),
+        scan / "scripts" / "assemble_snapshot.py": (
+            '"snapshot_type": "figma_token_snapshot"',
+            "validation_errors = VALIDATOR.validate(snapshot)",
+        ),
+        scan / "scripts" / "diff_snapshots.py": (
+            '"before": before',
+            '"after": after',
+            "NOTHING MATCHED",
+        ),
+    }
+    for path, phrases in required.items():
+        if not path.is_file():
+            errors.append(f"{path.relative_to(ROOT)}: required collector resource is missing")
+            continue
+        text = path.read_text(encoding="utf-8")
+        for phrase in phrases:
+            if phrase not in text:
+                errors.append(f"{path.relative_to(ROOT)}: missing collector invariant {phrase!r}")
+
+
 def run_tests(errors: list[str]) -> None:
     result = subprocess.run(
-        [sys.executable, "-B", "-m", "unittest", "-q", "tests/test_validators.py"],
+        [sys.executable, "-B", "-m", "unittest", "discover", "-q", "tests"],
         cwd=ROOT,
         text=True,
         capture_output=True,
@@ -502,6 +538,7 @@ def main() -> int:
     check_process_navigator_release(errors)
     check_property_coverage_release(errors)
     check_safety_invariants(errors)
+    check_collector_release(errors)
     run_tests(errors)
     if args.dist:
         check_dist(errors)
