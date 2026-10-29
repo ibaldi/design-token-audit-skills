@@ -206,9 +206,8 @@ def main() -> int:
     if unknown_completed:
         errors.append(f"completed variable chunks contain unknown collections: {sorted(unknown_completed)}")
     missing_collections = expected_collection_ids - completed_collection_ids
-    variable_status = "complete" if expected_collection_ids and not missing_collections else "partial"
-    if not expected_collection_ids:
-        variable_status = "failed"
+    # A complete inventory with no local collections is a valid, complete (empty) result.
+    variable_status = "complete" if not missing_collections else "partial"
     if missing_collections:
         warnings.append(f"variable chunks missing complete collections: {sorted(missing_collections)}")
 

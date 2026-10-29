@@ -135,6 +135,28 @@ class SnapshotToolTests(unittest.TestCase):
             self.assertEqual(missing.returncode, 1)
             self.assertIn("variable_id: unknown variable", missing.stderr)
 
+    def test_assembler_treats_empty_local_inventory_as_complete(self) -> None:
+        base = {
+            "chunk_version": "1.0.0", "adapter_id": "figma-console-plugin-api", "adapter_version": "0.9.0",
+            "captured_at": "2026-10-29T10:34:12Z", "source": {"file_key": "library-file", "file_name": "Component Library"},
+        }
+        chunks = [
+            dict(base, chunk_type="figma_token_variables", operation="inventory", complete=True, collections=[]),
+            dict(base, chunk_type="figma_token_variables", operation="variables", requested_collection_ids=[], completed_collection_ids=[], truncated=False, variables=[]),
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            paths = []
+            for index, chunk in enumerate(chunks):
+                path = directory / f"chunk-{index}.json"
+                write(path, chunk)
+                paths.append(path)
+            output = directory / "snapshot.json"
+            result = subprocess.run([sys.executable, str(ASSEMBLER), *map(str, paths), "--out", str(output)], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            snapshot = read(output)
+            self.assertEqual(snapshot["coverage"]["variables"], {"status": "complete", "captured": 0, "failed": 0})
+
     def test_diff_expectation_is_value_exact(self) -> None:
         before = read(FIXTURE)
         after = copy.deepcopy(before)

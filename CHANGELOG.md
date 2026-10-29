@@ -7,6 +7,7 @@
 - Added `referenced_variables` so node bindings outside the local inventory remain valid usage evidence: `remote_library` for subscribed-library variables and `deleted_local` for local variables the inventory no longer returns.
 - Kept referenced variables out of inventory totals, orphan evidence, and every write target; `deleted_local` bindings are reported as usage findings and routed through `token-binding-fix`.
 - Updated the variable and page collectors and the assembler to emit both features, and added validator and assembler regressions.
+- Treated a complete variable inventory with no local collections (for example a pure component library) as complete instead of failed coverage.
 
 ## 0.9.0 - 2026-10-28
 
