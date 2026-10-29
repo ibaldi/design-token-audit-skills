@@ -19,7 +19,7 @@ Use asynchronous APIs where available.
 | code syntax | variable `codeSyntax` when exposed |
 | page identity | page node `id` and `name` |
 | bound usage | node `boundVariables` and supported bound-variable fields |
-| referenced variable | `figma.variables.getVariableByIdAsync(id)` for a bound ID outside the local inventory: `remote_library` when `remote` is true, otherwise `deleted_local` |
+| referenced variable | `figma.variables.getVariableByIdAsync(id)` for a bound ID outside the local inventory: `remote_library` when `remote` is true, `stale_local_reference` for a returned non-remote variable, or `unresolved_reference` when lookup returns no object or fails |
 | document text | text node `characters` after font-safe read access |
 
 Normalize `VARIABLE_ALIAS` as `{"kind":"alias","target_variable_id":"..."}`. Normalize a COLOR mode value of the form `{color, opacity}` as `{"kind":"composite","components":{"color":...,"opacity":...}}`, normalizing each component like a top-level value. Normalize a missing collection mode key as `{"kind":"missing"}`. Do not resolve an alias by replacing it with its terminal literal.

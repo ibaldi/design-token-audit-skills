@@ -5,14 +5,14 @@ metadata:
   author: ibaldi
   version: "0.1.0"
   source-suite: design-token-audit-skills
-  source-suite-version: "0.9.0"
+  source-suite-version: "0.9.1"
 ---
 
 # Ibaldi Design Token Audit
 
 Figma port version: `0.1.0`
 
-Source suite version: `0.9.0`
+Source suite version: `0.9.1`
 
 Use this skill as the Figma-native companion to the validated multi-file Claude skill suite. Audit and improve variables, token usage, and related documentation in the current Figma file through small, evidence-backed passes.
 
@@ -54,6 +54,8 @@ Before acting, state which capabilities are observable in the current session:
 - external Figma consumers and code consumers
 
 Mark unavailable evidence `not_observable`. Never infer a value, binding, consumer, or absence from missing access. If core collection or variable inventory is unavailable, stop with `blocked`.
+
+When an observed node binding points outside the local inventory, preserve the binding ID and classify the reference as a remote library variable, a stale local reference, or unresolved. An individual unresolved reference does not invalidate the whole read-only result: mark usage coverage `partial`, state the affected nodes and paths, and hold every automatic fix or deletion decision involving it.
 
 ## Process Navigator
 
@@ -334,4 +336,4 @@ Separate:
 - documentation evidence
 - one recommended next action
 
-Do not claim machine-validated audit JSON, complete external usage coverage, or equivalence with the multi-file Claude suite. Describe this skill as the Figma-native companion edition derived from source suite v0.9.0.
+Do not claim machine-validated audit JSON, complete external usage coverage, or equivalence with the multi-file Claude suite. Describe this skill as the Figma-native companion edition derived from source suite v0.9.1.

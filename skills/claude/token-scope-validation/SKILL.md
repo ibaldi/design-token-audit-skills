@@ -5,7 +5,7 @@ description: Validate Figma variable scopes after a valid read-only scan. Use fo
 
 # Token Scope Validation
 
-Version: 0.9.0
+Version: 0.9.1
 
 Use this skill to validate whether token scopes match intended usage. `ALL_SCOPES` is only one finding type; the broader task is scope-intent validation.
 

@@ -157,6 +157,42 @@ class SnapshotToolTests(unittest.TestCase):
             snapshot = read(output)
             self.assertEqual(snapshot["coverage"]["variables"], {"status": "complete", "captured": 0, "failed": 0})
 
+    def test_assembler_keeps_unresolved_usage_with_partial_coverage(self) -> None:
+        base = {
+            "chunk_version": "1.0.0", "adapter_id": "figma-console-plugin-api", "adapter_version": "0.9.1",
+            "captured_at": "2026-10-29T11:00:00Z", "source": {"file_key": "fixture-file", "file_name": "Fixture Library"},
+        }
+        unresolved_id = "VariableID:unavailable/9:9"
+        chunks = [
+            dict(base, chunk_type="figma_token_variables", operation="inventory", complete=True, collections=[]),
+            dict(base, chunk_type="figma_token_variables", operation="variables", requested_collection_ids=[], completed_collection_ids=[], truncated=False, variables=[]),
+            dict(base, chunk_type="figma_token_properties", operation="page_inventory", complete=True, pages=[{"id": "Page:1", "name": "Playground"}]),
+            dict(base, chunk_type="figma_token_properties", operation="pages", requested_page_ids=["Page:1"], completed_page_ids=["Page:1"], pages=[{
+                "id": "Page:1", "name": "Playground", "traversal_status": "complete", "node_count": 1,
+                "usages": [{"variable_id": unresolved_id, "node_id": "Node:1", "page_id": "Page:1", "binding_path": "opacity", "binding_kind": "bound_variable"}],
+                "observations": [], "limitations": [],
+            }], referenced_variables=[{
+                "id": unresolved_id, "origin": "unresolved_reference", "name": None, "key": None,
+                "resolved_type": None, "remote": None, "collection_id": None,
+                "reason": "getVariableByIdAsync returned no variable",
+            }]),
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            paths = []
+            for index, chunk in enumerate(chunks):
+                path = directory / f"chunk-{index}.json"
+                write(path, chunk)
+                paths.append(path)
+            output = directory / "snapshot.json"
+            result = subprocess.run([sys.executable, str(ASSEMBLER), *map(str, paths), "--out", str(output)], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            snapshot = read(output)
+            self.assertEqual(snapshot["coverage"]["pages"]["status"], "complete")
+            self.assertEqual(snapshot["coverage"]["usages"]["status"], "partial")
+            self.assertEqual(snapshot["referenced_variables"][0]["id"], unresolved_id)
+            self.assertTrue(any("could not be resolved" in warning for warning in snapshot["warnings"]))
+
     def test_diff_expectation_is_value_exact(self) -> None:
         before = read(FIXTURE)
         after = copy.deepcopy(before)

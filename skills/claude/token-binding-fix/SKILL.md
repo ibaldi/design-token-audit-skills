@@ -5,7 +5,7 @@ description: Preview, approve, apply, and verify exact Figma node-property bindi
 
 # Token Binding Fix
 
-Version: 0.9.0
+Version: 0.9.1
 
 Use this skill only to change bindings between existing Figma node properties and existing variables. Read [references/binding-evidence-contract.md](references/binding-evidence-contract.md) before preparing or applying a binding pass. When a tuple can change the rendered background behind text or a meaningful graphical object, also read [references/relational-safety-contract.md](references/relational-safety-contract.md).
 

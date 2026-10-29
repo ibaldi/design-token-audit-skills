@@ -114,7 +114,7 @@ Classify possible orphan evidence as:
 
 Only use `potential orphan candidate` when the evidence scope is stated. Never recommend deletion from local evidence alone.
 
-When node traversal is supported, inspect the declared pages and record bound variable references exposed on nodes. Record bound variables outside the local inventory as referenced variables: `remote_library` for subscribed-library variables and `deleted_local` for local variables that the inventory no longer returns. Never add them to the local inventory or treat them as local orphan evidence. Report which pages were fully traversed. If traversal is partial or unsupported, do not claim absence of node usage.
+When node traversal is supported, inspect the declared pages and record bound variable references exposed on nodes. Record bound variables outside the local inventory as referenced variables: `remote_library` for subscribed-library variables, `stale_local_reference` when lookup returns a non-remote variable absent from the local inventory, and `unresolved_reference` when lookup returns no object or fails. Never add them to the local inventory or treat them as local orphan evidence. An unresolved reference keeps the snapshot valid but makes usage coverage `partial`; preserve its binding ID and node evidence, state the limitation, and hold every automatic fix or deletion decision involving it. Report which pages were fully traversed. If traversal is partial or unsupported, do not claim absence of node usage.
 
 ## 8. Inspect Changelog And Reference Evidence
 

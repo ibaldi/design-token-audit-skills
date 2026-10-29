@@ -1,15 +1,16 @@
-// collect_figma_properties.js — token-readonly-scan 0.9.0
+// collect_figma_properties.js — token-readonly-scan 0.9.1
 // READ ONLY. Run as the body of a Figma Plugin API / figma_execute call.
 // Emits exact binding usages plus property traversal observations for Audit 1.5.
 
 const CONFIG = {
   mode: "page_inventory", // "page_inventory" | "pages"
   pageIds: [], // pages mode: one or a few page IDs; [] means all
-  maxNodes: 40000
+  maxNodes: 40000,
+  referenceLookupBatchSize: 25
 };
 
 const ADAPTER_ID = "figma-console-plugin-api";
-const ADAPTER_VERSION = "0.9.0";
+const ADAPTER_VERSION = "0.9.1";
 
 const SIMPLE_FIELDS = [
   "height", "width", "characters", "itemSpacing", "paddingLeft", "paddingRight",
@@ -169,24 +170,57 @@ if (CONFIG.mode === "page_inventory") {
 }
 async function referencedVariables(results) {
   const localIds = new Set((await figma.variables.getLocalVariablesAsync()).map((variable) => variable.id));
-  const references = [];
   const seen = new Set();
+  const ids = [];
   for (const page of results) {
     for (const usage of page.usages) {
       if (seen.has(usage.variable_id) || localIds.has(usage.variable_id)) continue;
       seen.add(usage.variable_id);
-      const variable = await figma.variables.getVariableByIdAsync(usage.variable_id);
-      if (!variable) continue;
-      references.push({
-        id: variable.id,
-        origin: variable.remote ? "remote_library" : "deleted_local",
-        name: variable.name || null,
-        key: variable.key || null,
-        resolved_type: variable.resolvedType || null,
-        remote: !!variable.remote,
-        collection_id: variable.remote ? null : (variable.variableCollectionId || null)
-      });
+      ids.push(usage.variable_id);
     }
+  }
+  const references = [];
+  const batchSize = Math.max(1, CONFIG.referenceLookupBatchSize || 25);
+  for (let start = 0; start < ids.length; start += batchSize) {
+    const batch = ids.slice(start, start + batchSize);
+    const resolved = await Promise.all(batch.map(async (id) => {
+      try {
+        const variable = await figma.variables.getVariableByIdAsync(id);
+        if (!variable) {
+          return {
+            id,
+            origin: "unresolved_reference",
+            name: null,
+            key: null,
+            resolved_type: null,
+            remote: null,
+            collection_id: null,
+            reason: "getVariableByIdAsync returned no variable"
+          };
+        }
+        return {
+          id,
+          origin: variable.remote ? "remote_library" : "stale_local_reference",
+          name: variable.name || null,
+          key: variable.key || null,
+          resolved_type: variable.resolvedType || null,
+          remote: !!variable.remote,
+          collection_id: variable.variableCollectionId || null
+        };
+      } catch (_) {
+        return {
+          id,
+          origin: "unresolved_reference",
+          name: null,
+          key: null,
+          resolved_type: null,
+          remote: null,
+          collection_id: null,
+          reason: "getVariableByIdAsync failed"
+        };
+      }
+    }));
+    references.push(...resolved);
   }
   return references;
 }

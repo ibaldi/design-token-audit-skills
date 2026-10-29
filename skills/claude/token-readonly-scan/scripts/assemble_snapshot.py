@@ -200,6 +200,11 @@ def main() -> int:
                 record["provenance"] = provenance(source_path, captured_at)
                 merge_unique(referenced_variables, record, str(path), errors)
 
+    unresolved_reference_ids = sorted(
+        reference_id for reference_id, reference in referenced_variables.items()
+        if reference.get("origin") == "unresolved_reference"
+    )
+
     if len(adapter_versions) != 1:
         errors.append("collector chunks must use exactly one adapter version")
     unknown_completed = completed_collection_ids - expected_collection_ids
@@ -220,6 +225,12 @@ def main() -> int:
         missing_pages = set()
         page_status = "not_configured"
     usage_status = page_status if page_inventory_chunks else "not_configured"
+    if unresolved_reference_ids and usage_status == "complete":
+        usage_status = "partial"
+        warnings.append(
+            f"{len(unresolved_reference_ids)} bound variable reference(s) could not be resolved: "
+            f"{unresolved_reference_ids}"
+        )
 
     if errors:
         for error in errors:
@@ -300,7 +311,7 @@ def main() -> int:
                     "adapter_id": ADAPTER_ID,
                     "capability_basis": "official_figma_plugin_api",
                     "canonical_profile": "figma_plugin_api_2026_09",
-                    "capability_evidence": "collect_figma_properties.js 0.9.0 canonical property declaration",
+                    "capability_evidence": "collect_figma_properties.js 0.9.1 canonical property declaration",
                 },
                 "families": families,
                 "excluded_non_bindable_properties": ["rotation", "blendMode", "layoutSizingHorizontal", "layoutSizingVertical"],

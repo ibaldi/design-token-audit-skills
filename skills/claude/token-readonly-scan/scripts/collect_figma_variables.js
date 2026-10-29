@@ -1,4 +1,4 @@
-// collect_figma_variables.js — token-readonly-scan 0.9.0
+// collect_figma_variables.js — token-readonly-scan 0.9.1
 // READ ONLY. Run as the body of a Figma Plugin API / figma_execute call.
 // Change CONFIG only. The returned chunks are normalized by assemble_snapshot.py.
 
@@ -10,7 +10,7 @@ const CONFIG = {
 };
 
 const ADAPTER_ID = "figma-console-plugin-api";
-const ADAPTER_VERSION = "0.9.0";
+const ADAPTER_VERSION = "0.9.1";
 
 async function normalizeValue(value) {
   if (value && typeof value === "object" && value.type === "VARIABLE_ALIAS") {

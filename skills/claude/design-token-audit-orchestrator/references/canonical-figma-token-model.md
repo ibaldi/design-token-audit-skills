@@ -210,11 +210,12 @@ Nodes can bind variables that are not part of the local inventory. Record each s
 Allowed `origin` values:
 
 - `remote_library`: the variable belongs to a subscribed library. `remote` must be `true`.
-- `deleted_local`: the variable is local to the file (`remote: false`) but is no longer returned by the local variable inventory, typically because it or its collection was deleted while a node binding remained. Preserve the last observable `collection_id` when exposed.
+- `stale_local_reference`: the lookup still returns a non-remote variable, but the local inventory does not contain it. This is evidence of a stale local reference, not proof that a variable was deleted. Preserve the observable `collection_id`.
+- `unresolved_reference`: the binding ID is observable, but the variable lookup returns no object or fails. Set `name`, `key`, `resolved_type`, `remote`, and `collection_id` to `null`, and include a non-empty `reason`.
 
-Required fields: `id`, `origin`, `name`, `key`, `resolved_type`, `remote`, `collection_id`, and `provenance`. Use `null` for `name`, `key`, `resolved_type`, or `collection_id` when the lookup does not expose them. An ID cannot appear both as a local variable and as a reference. A `deleted_local` reference cannot point to an observed local collection.
+Required fields: `id`, `origin`, `name`, `key`, `resolved_type`, `remote`, `collection_id`, and `provenance`. Use `null` for optional metadata the lookup does not expose. An ID cannot appear both as a local variable and as a reference. A `stale_local_reference` cannot point to an observed local collection.
 
-References are usage evidence only. They are not part of the local inventory, do not count toward collection or variable totals, and are never valid targets for value, scope, or creation writes in this suite. A `remote_library` binding stays outside local orphan and coverage evidence; a library-aware workflow is required before it can become a binding target. A `deleted_local` binding is an integrity observation: the node still resolves through a variable that the file no longer manages. Report it as a `usage` finding; any rebind or unbind must go through the separately approved `token-binding-fix` workflow.
+References are usage evidence only. They are not part of the local inventory, do not count toward collection or variable totals, and are never valid targets for value, scope, or creation writes in this suite. A `remote_library` binding stays outside local orphan evidence; a library-aware workflow is required before it can become a binding target. A `stale_local_reference` is an integrity observation and must not be treated as a confirmed deletion. An `unresolved_reference` keeps the snapshot valid but requires `coverage.usages.status: partial`, an explicit limitation, and a hold on every automatic fix or deletion decision involving that reference. Any rebind or unbind must go through the separately approved `token-binding-fix` workflow.
 
 ## Document Evidence
 

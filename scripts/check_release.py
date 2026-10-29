@@ -154,7 +154,7 @@ def check_figma_companion(errors: list[str]) -> None:
             errors.append(f"Figma companion: local file reference {target!r} is not standalone")
     for phrase in (
         "Figma port version: `0.1.0`",
-        "Source suite version: `0.9.0`",
+        "Source suite version: `0.9.1`",
         "Start read-only.",
         "show an exact preview and wait for explicit approval",
         "Always run both scope validation and semantic-gap assessment",
@@ -457,10 +457,13 @@ def check_collector_release(errors: list[str]) -> None:
             "READ ONLY",
             'chunk_type: "figma_token_properties"',
             '"textRangeFills[*].color"',
+            "referenceLookupBatchSize",
+            'origin: "unresolved_reference"',
         ),
         scan / "scripts" / "assemble_snapshot.py": (
             '"snapshot_type": "figma_token_snapshot"',
             "validation_errors = VALIDATOR.validate(snapshot)",
+            'usage_status = "partial"',
         ),
         scan / "scripts" / "diff_snapshots.py": (
             '"before": before',

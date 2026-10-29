@@ -18,7 +18,7 @@ SCHEMA_VERSIONS = {"1.0.0", "1.1.0"}
 VALUE_KINDS = {"literal", "alias", "missing", "not_observable", "composite"}
 COMPONENT_KINDS = {"literal", "alias", "not_observable"}
 COMPOSITE_COMPONENTS = {"COLOR": {"color": "COLOR", "opacity": "FLOAT"}}
-REFERENCE_ORIGINS = {"remote_library", "deleted_local"}
+REFERENCE_ORIGINS = {"remote_library", "stale_local_reference", "unresolved_reference"}
 PAGE_STATUSES = {"complete", "partial", "not_observable", "failed"}
 EVIDENCE_TYPES = {"changelog", "reference", "other"}
 VARIABLE_TYPES = {"BOOLEAN", "COLOR", "FLOAT", "STRING"}
@@ -346,6 +346,7 @@ def validate(data: Any) -> list[str]:
             errors.append(f"collections.variable_ids: unknown variable {declared_id!r}")
 
     referenced_variable_ids: set[str] = set()
+    unresolved_reference_ids: set[str] = set()
     if "referenced_variables" in data:
         references = data.get("referenced_variables")
         if schema_version == "1.0.0":
@@ -367,11 +368,20 @@ def validate(data: Any) -> list[str]:
                     enum(reference.get("resolved_type"), VARIABLE_TYPES, f"{path}.resolved_type", errors)
                 if origin == "remote_library" and reference.get("remote") is not True:
                     errors.append(f"{path}.remote: must be true for remote_library")
-                if origin == "deleted_local":
+                if origin == "stale_local_reference":
                     if reference.get("remote") is not False:
-                        errors.append(f"{path}.remote: must be false for deleted_local")
+                        errors.append(f"{path}.remote: must be false for stale_local_reference")
                     if reference.get("collection_id") in collection_ids:
-                        errors.append(f"{path}.collection_id: deleted_local cannot belong to an observed collection")
+                        errors.append(f"{path}.collection_id: stale_local_reference cannot belong to an observed collection")
+                if origin == "unresolved_reference":
+                    if isinstance(rid, str):
+                        unresolved_reference_ids.add(rid)
+                    for key in ("name", "key", "resolved_type", "remote", "collection_id"):
+                        if reference.get(key) is not None:
+                            errors.append(f"{path}.{key}: must be null for unresolved_reference")
+                    nonempty(reference.get("reason"), f"{path}.reason", errors)
+                elif reference.get("reason") is not None:
+                    nonempty(reference.get("reason"), f"{path}.reason", errors)
                 if rid in variable_ids:
                     errors.append(f"{path}.id: already captured as a local variable")
                 if rid in referenced_variable_ids:
@@ -379,6 +389,10 @@ def validate(data: Any) -> list[str]:
                 if isinstance(rid, str):
                     referenced_variable_ids.add(rid)
                 provenance(reference.get("provenance"), f"{path}.provenance", adapter_id, source_type, errors)
+
+    if unresolved_reference_ids and obj(coverage) and obj(coverage.get("usages")):
+        if coverage["usages"].get("status") == "complete":
+            errors.append("coverage.usages.status: must be partial when unresolved references are present")
 
     page_ids: set[str] = set()
     for index, page in enumerate(pages):

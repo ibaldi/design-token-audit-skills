@@ -1,11 +1,11 @@
 ---
 name: token-readonly-scan
-description: Audit a Figma token library read-only with canonical snapshots. Use for inventory, bindings, coverage, modes, aliases, usage evidence, or baselines.
+description: Audit a Figma token library read-only with canonical snapshots. Use for inventory, composite colors, local or library bindings, unresolved references, coverage, usage evidence, or baselines.
 ---
 
 # Token Read-only Scan
 
-Version: 0.9.0
+Version: 0.9.1
 
 Use this skill to inspect a design token library without changing anything.
 
@@ -27,6 +27,8 @@ Do not write, rename, delete, create, move, or edit any Figma variable, token, n
 Do not infer fields the available Figma access cannot expose. Mark them `not observable` and include them in the coverage statement.
 
 Do not run audit rules directly on adapter-specific responses. Normalize and integrity-check the canonical snapshot first, then gate each rule by its required capabilities.
+
+Keep a snapshot valid when individual bound variable IDs cannot be resolved, but set usage coverage to `partial`, preserve every affected node and binding path, state the limitation, and hold automatic fixes or deletion decisions involving those references.
 
 When the canonical snapshot is saved as a file, run `python3 scripts/validate_snapshot.py <snapshot.json>` before applying audit rules.
 

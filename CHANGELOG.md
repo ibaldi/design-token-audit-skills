@@ -2,11 +2,14 @@
 
 ## Unreleased
 
+## 0.9.1 - 2026-10-29
+
 - Updated the canonical `figma_token_snapshot` to `1.1.0`; validators still accept `1.0.0` snapshots that use neither new feature.
 - Added the `composite` mode-value kind for COLOR variables that combine a color and a separate opacity, each preserved as a literal or alias, with component alias integrity checks and semantic comparison.
-- Added `referenced_variables` so node bindings outside the local inventory remain valid usage evidence: `remote_library` for subscribed-library variables and `deleted_local` for local variables the inventory no longer returns.
-- Kept referenced variables out of inventory totals, orphan evidence, and every write target; `deleted_local` bindings are reported as usage findings and routed through `token-binding-fix`.
-- Updated the variable and page collectors and the assembler to emit both features, and added validator and assembler regressions.
+- Added `referenced_variables` so node bindings outside the local inventory remain valid usage evidence: `remote_library` for subscribed-library variables, `stale_local_reference` for observable non-remote references outside the inventory, and `unresolved_reference` when lookup returns no object or fails.
+- Kept snapshots valid with `partial` usage coverage when individual references cannot be resolved, while preserving binding evidence and blocking automatic fixes or deletion decisions for those references.
+- Kept referenced variables out of inventory totals, orphan evidence, and every write target; stale local bindings are reported as usage findings and routed through `token-binding-fix`.
+- Updated the variable and page collectors and the assembler to emit both features, resolve external references in bounded batches, preserve remote collection IDs, and added validator, assembler, and collector regressions.
 - Treated a complete variable inventory with no local collections (for example a pure component library) as complete instead of failed coverage.
 
 ## 0.9.0 - 2026-10-28

@@ -29,7 +29,7 @@ The goal is not only cleanup. The goal is a token library whose intent is readab
 
 The current MVP contains seven Claude-ready skills:
 
-Current skill package version: `0.9.0`
+Current skill package version: `0.9.1`
 
 | Skill | Purpose |
 | --- | --- |
@@ -51,7 +51,7 @@ skills/figma/ibaldi-design-token-audit.md
 
 Current Figma port version: `0.1.0`
 
-Source Claude suite version: `0.9.0`
+Source Claude suite version: `0.9.1`
 
 This is one standalone Markdown file for the Figma agent and Figma Make. It preserves the phased audit workflow, Process Navigator, exact preview and approval gates, supported fix-pass boundaries, contrast-aware binding checks, documentation safety, recovery rules, and post-write verification.
 
@@ -61,7 +61,7 @@ The Figma companion is not technically equivalent to the Claude suite: Figma cus
 
 The specialized MVP workflow covers read-only scanning, scope validation, semantic gap-finding, token creation proposals, approved scope, token-creation, existing-token value, and node-binding fixes, and baseline handoff.
 
-The read-only scan can surface architecture, mode, naming, orphan-candidate, and description observations. Version `0.9.0` does not provide separate validation or write workflows for those areas. Treat them as evidence-backed observations or hold items, not as completed specialized reviews or automatically actionable fixes.
+The read-only scan can surface architecture, mode, naming, orphan-candidate, and description observations. Version `0.9.1` does not provide separate validation or write workflows for those areas. Treat them as evidence-backed observations or hold items, not as completed specialized reviews or automatically actionable fixes.
 
 The read-only scan includes a concrete Figma execution contract. It defines the preferred read paths, required collection and variable fields, alias resolution, node-usage evidence, deterministic finding rules, and mandatory coverage reporting. Data that the available Figma access cannot expose must be reported as `not observable`, not inferred. The orchestrator ZIP now bundles the Phase 1 contracts and validators as well, so installing it alone does not silently lose the schema gate.
 
@@ -87,7 +87,7 @@ FLOAT binding candidates require a consumer-resolved preflight. The stored or ad
 
 The read-only skill includes a dependency-free validator for generated audit JSON artifacts. It checks structural requirements and cross-field consistency before a report is delivered or stored as a baseline. Missing or failed validation blocks later phases; a manual plausibility review may only produce an explicitly unvalidated draft.
 
-Version `0.9.0` adds an optional concrete Figma Console adapter path without introducing a separate contract skill. Read-only JavaScript collectors capture chunked variable inventories, exact node-property bindings, and property observations. A dependency-free assembler emits the existing canonical `figma_token_snapshot` `1.0.0`; an exact diff tool supports filtered pre-write drift checks and value-accurate post-write verification, including bindings. The suite snapshot and Audit `1.5.0` remain the only canonical formats.
+Version `0.9.1` extends the optional Figma Console adapter path with composite COLOR values and referenced-variable evidence. Read-only JavaScript collectors capture chunked variable inventories, exact node-property bindings, property observations, remote-library references, stale local references, and unresolved references. A dependency-free assembler emits canonical `figma_token_snapshot` `1.1.0` while validators remain compatible with `1.0.0`. Individual unresolved references keep the snapshot valid with `partial` usage coverage and block unsupported fixes. The suite snapshot and Audit `1.5.0` remain the only canonical formats.
 
 It also includes a dependency-free canonical snapshot validator and equivalent Plugin API, MCP, and export fixtures. Contract comparison verifies that different adapters preserve the same token semantics even when optional document coverage differs.
 
@@ -118,7 +118,7 @@ https://github.com/ibaldi/design-token-audit-skills/releases
 
 Then upload the ZIP files to Claude as custom skills. For the Figma agent, download the standalone `ibaldi-design-token-audit.md` release asset instead.
 
-The seven ZIP files in `dist/claude/` are the installable skill packages. A separately named `design-token-audit-skills-v0.9.0-complete.zip` is a maintainer/source archive of the whole project and must not be uploaded as a single skill.
+The seven ZIP files in `dist/claude/` are the installable skill packages. A separately named `design-token-audit-skills-v0.9.1-complete.zip` is a maintainer/source archive of the whole project and must not be uploaded as a single skill.
 
 ## Install In Claude
 
@@ -254,7 +254,7 @@ python3 skills/claude/design-token-audit-orchestrator/scripts/validate_workflow_
 Run all source, metadata, version, reference, fixture, and package checks with:
 
 ```bash
-python3 scripts/check_release.py --version 0.9.0
+python3 scripts/check_release.py --version 0.9.1
 ```
 
 ## Creating A GitHub Release
@@ -262,7 +262,7 @@ python3 scripts/check_release.py --version 0.9.0
 Use the release script:
 
 ```bash
-./scripts/release.sh v0.9.0
+./scripts/release.sh v0.9.1
 ```
 
 This rebuilds the Claude ZIP packages and creates a GitHub Release with the ZIPs attached as downloadable artifacts.

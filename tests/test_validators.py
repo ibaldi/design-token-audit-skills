@@ -494,7 +494,7 @@ class ValidatorTests(unittest.TestCase):
                 "resolved_type": "FLOAT", "remote": True, "collection_id": None, "provenance": reference_provenance,
             },
             {
-                "id": "VariableID:44:38", "origin": "deleted_local", "name": "color/red/900", "key": "deleted",
+                "id": "VariableID:44:38", "origin": "stale_local_reference", "name": "color/red/900", "key": "stale",
                 "resolved_type": "COLOR", "remote": False, "collection_id": "VariableCollectionId:44:12", "provenance": reference_provenance,
             },
         ]
@@ -541,12 +541,12 @@ class ValidatorTests(unittest.TestCase):
         not_remote = self.composite_and_reference_snapshot()
         not_remote["referenced_variables"][0]["remote"] = False
         cases.append(("remote flag", not_remote, "remote: must be true for remote_library"))
-        remote_deleted = self.composite_and_reference_snapshot()
-        remote_deleted["referenced_variables"][1]["remote"] = True
-        cases.append(("deleted flag", remote_deleted, "remote: must be false for deleted_local"))
+        remote_stale = self.composite_and_reference_snapshot()
+        remote_stale["referenced_variables"][1]["remote"] = True
+        cases.append(("stale flag", remote_stale, "remote: must be false for stale_local_reference"))
         live_collection = self.composite_and_reference_snapshot()
         live_collection["referenced_variables"][1]["collection_id"] = "Collection:semantic"
-        cases.append(("deleted in live collection", live_collection, "deleted_local cannot belong to an observed collection"))
+        cases.append(("stale in live collection", live_collection, "stale_local_reference cannot belong to an observed collection"))
         bad_origin = self.composite_and_reference_snapshot()
         bad_origin["referenced_variables"][0]["origin"] = "published"
         cases.append(("unknown origin", bad_origin, "origin: expected one of"))
@@ -557,6 +557,35 @@ class ValidatorTests(unittest.TestCase):
             with self.subTest(case=name):
                 errors = SNAPSHOT_VALIDATOR.validate(artifact)
                 self.assertTrue(any(expected in error for error in errors), f"Expected {expected!r}; received {errors!r}")
+
+    def test_unresolved_reference_is_valid_with_partial_usage_coverage(self) -> None:
+        artifact = self.composite_and_reference_snapshot()
+        unresolved_id = "VariableID:unavailable/9:9"
+        artifact["referenced_variables"].append({
+            "id": unresolved_id,
+            "origin": "unresolved_reference",
+            "name": None,
+            "key": None,
+            "resolved_type": None,
+            "remote": None,
+            "collection_id": None,
+            "reason": "getVariableByIdAsync returned no variable",
+            "provenance": {"adapter_id": "figma-plugin-api", "source_path": "getVariableByIdAsync for bound variable"},
+        })
+        artifact["usages"].append({
+            "variable_id": unresolved_id,
+            "node_id": "Node:3",
+            "page_id": "Page:1",
+            "binding_path": "opacity",
+            "binding_kind": "bound_variable",
+            "provenance": {"adapter_id": "figma-plugin-api", "source_path": "node.boundVariables"},
+        })
+        artifact["coverage"]["usages"]["status"] = "partial"
+        self.assertEqual(SNAPSHOT_VALIDATOR.validate(artifact), [])
+
+        artifact["coverage"]["usages"]["status"] = "complete"
+        errors = SNAPSHOT_VALIDATOR.validate(artifact)
+        self.assertTrue(any("must be partial when unresolved references" in error for error in errors), errors)
 
     def test_mode_ids_are_scoped_to_their_collection(self) -> None:
         artifact = copy.deepcopy(self.snapshots[0])

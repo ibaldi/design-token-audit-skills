@@ -5,7 +5,7 @@ description: Preview, approve, apply, and verify exact value corrections to exis
 
 # Token Value Fix
 
-Version: 0.9.0
+Version: 0.9.1
 
 Use this skill only to correct values of existing local Figma variables. Read [references/value-evidence-contract.md](references/value-evidence-contract.md) and validate the evidence JSON with `python3 scripts/validate_value_fix.py <proposal.json>` before presenting a write-ready preview.
 

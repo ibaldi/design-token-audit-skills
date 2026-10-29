@@ -22,7 +22,7 @@ All JavaScript collectors are read-only. Do not add Figma mutation APIs to them.
 5. Run it with `mode: "pages"` in bounded page chunks. Every page from the inventory must complete before page, usage, or property coverage can be complete.
 6. Save each returned JSON object unchanged. Never edit counts or completion markers manually.
 
-The variable collector normalizes a COLOR mode value that combines a color and an opacity as a `composite` value. The page collector looks up every bound variable ID outside the local inventory once and records it in `referenced_variables` as `remote_library` or `deleted_local`, so these usages remain valid evidence without entering the local inventory.
+The variable collector normalizes a COLOR mode value that combines a color and an opacity as a `composite` value. The page collector looks up every distinct bound variable ID outside the local inventory in bounded batches and records it in `referenced_variables` as `remote_library`, `stale_local_reference`, or `unresolved_reference`. A failed or empty lookup preserves the binding ID and node evidence, keeps the snapshot valid, and reduces usage coverage to `partial` instead of aborting the scan. Referenced variables never enter the local inventory.
 
 If a read call times out, rerunning the same read-only chunk is safe. Deduplicate only by stable IDs and reject conflicting duplicate records.
 
@@ -48,6 +48,7 @@ The assembler must not claim complete coverage when:
 - source file identities conflict;
 - chunks use incompatible adapter versions;
 - a chunk contains a collector error.
+- any bound variable reference is `unresolved_reference`; page traversal may remain complete, but usage coverage must be `partial`.
 
 ## Drift And Verification
 
