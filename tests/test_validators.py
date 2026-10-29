@@ -458,6 +458,106 @@ class ValidatorTests(unittest.TestCase):
                     f"Expected {case['expected_error']!r}; received {errors!r}",
                 )
 
+    def composite_and_reference_snapshot(self) -> dict:
+        artifact = copy.deepcopy(self.snapshots[0])
+        artifact["schema_version"] = "1.1.0"
+        provenance = {"adapter_id": "figma-plugin-api", "source_path": "local variables"}
+        artifact["collections"][0]["variable_ids"] += ["Variable:opacity-15", "Variable:danger-subtle"]
+        artifact["variables"] += [
+            {
+                "id": "Variable:opacity-15", "name": "Primitive/opacity/15", "collection_id": "Collection:semantic",
+                "resolved_type": "FLOAT", "description": "", "scopes": ["COLOR_OPACITY"],
+                "values_by_mode": {"Mode:light": {"kind": "literal", "value": 15}, "Mode:dark": {"kind": "literal", "value": 15}},
+                "provenance": provenance,
+            },
+            {
+                "id": "Variable:danger-subtle", "name": "Semantic/action/danger-subtle", "collection_id": "Collection:semantic",
+                "resolved_type": "COLOR", "description": "", "scopes": ["FRAME_FILL"],
+                "values_by_mode": {
+                    "Mode:light": {"kind": "composite", "components": {
+                        "color": {"kind": "alias", "target_variable_id": "Variable:primitive-red"},
+                        "opacity": {"kind": "alias", "target_variable_id": "Variable:opacity-15"},
+                    }},
+                    "Mode:dark": {"kind": "composite", "components": {
+                        "color": {"kind": "literal", "value": {"r": 1, "g": 0.3, "b": 0.3, "a": 1}},
+                        "opacity": {"kind": "literal", "value": 30},
+                    }},
+                },
+                "provenance": provenance,
+            },
+        ]
+        artifact["coverage"]["variables"]["captured"] = len(artifact["variables"])
+        reference_provenance = {"adapter_id": "figma-plugin-api", "source_path": "getVariableByIdAsync for bound variable"}
+        artifact["referenced_variables"] = [
+            {
+                "id": "VariableID:library/1:2", "origin": "remote_library", "name": "spacing/xs", "key": "library",
+                "resolved_type": "FLOAT", "remote": True, "collection_id": None, "provenance": reference_provenance,
+            },
+            {
+                "id": "VariableID:44:38", "origin": "deleted_local", "name": "color/red/900", "key": "deleted",
+                "resolved_type": "COLOR", "remote": False, "collection_id": "VariableCollectionId:44:12", "provenance": reference_provenance,
+            },
+        ]
+        usage_provenance = {"adapter_id": "figma-plugin-api", "source_path": "node.boundVariables"}
+        artifact["usages"] += [
+            {"variable_id": "VariableID:library/1:2", "node_id": "Node:1", "page_id": "Page:1", "binding_path": "paddingTop",
+             "binding_kind": "bound_variable", "provenance": usage_provenance},
+            {"variable_id": "VariableID:44:38", "node_id": "Node:2", "page_id": "Page:1", "binding_path": "fills[0].color",
+             "binding_kind": "bound_variable", "provenance": usage_provenance},
+        ]
+        return artifact
+
+    def test_composite_values_and_referenced_usages_are_valid_in_schema_1_1(self) -> None:
+        artifact = self.composite_and_reference_snapshot()
+        self.assertEqual(SNAPSHOT_VALIDATOR.validate(artifact), [])
+        projection = SNAPSHOT_VALIDATOR.semantic_projection(artifact)
+        subtle = next(item for item in projection["variables"] if item["name"] == "Semantic/action/danger-subtle")
+        self.assertEqual(subtle["values_by_mode"]["Light"]["components"]["opacity"]["target_variable"], "Primitive/opacity/15")
+
+    def test_composite_and_reference_features_are_rejected_when_invalid(self) -> None:
+        cases = []
+        legacy = self.composite_and_reference_snapshot()
+        legacy["schema_version"] = "1.0.0"
+        cases.append(("legacy schema composite", legacy, "composite values require schema_version 1.1.0"))
+        cases.append(("legacy schema reference", legacy, "referenced_variables: requires schema_version 1.1.0"))
+        wrong_type = self.composite_and_reference_snapshot()
+        wrong_type["variables"][2]["values_by_mode"]["Mode:light"] = copy.deepcopy(wrong_type["variables"][3]["values_by_mode"]["Mode:light"])
+        cases.append(("composite on FLOAT", wrong_type, "composite values are allowed only for"))
+        extra = self.composite_and_reference_snapshot()
+        extra["variables"][3]["values_by_mode"]["Mode:light"]["components"]["alpha"] = {"kind": "literal", "value": 1}
+        cases.append(("unknown component", extra, "components: keys must be exactly"))
+        dangling = self.composite_and_reference_snapshot()
+        dangling["variables"][3]["values_by_mode"]["Mode:light"]["components"]["opacity"]["target_variable_id"] = "Variable:missing"
+        cases.append(("dangling component alias", dangling, "components.opacity.target_variable_id: unresolved local alias target"))
+        nested = self.composite_and_reference_snapshot()
+        nested["variables"][3]["values_by_mode"]["Mode:light"]["components"]["color"] = {"kind": "missing"}
+        cases.append(("missing component", nested, "components.color.kind"))
+        bad_opacity = self.composite_and_reference_snapshot()
+        bad_opacity["variables"][3]["values_by_mode"]["Mode:dark"]["components"]["opacity"]["value"] = "30%"
+        cases.append(("non-numeric opacity", bad_opacity, "expected numeric literal"))
+        local_remote = self.composite_and_reference_snapshot()
+        local_remote["referenced_variables"][0]["id"] = "Variable:danger"
+        cases.append(("reference shadows local", local_remote, "already captured as a local variable"))
+        not_remote = self.composite_and_reference_snapshot()
+        not_remote["referenced_variables"][0]["remote"] = False
+        cases.append(("remote flag", not_remote, "remote: must be true for remote_library"))
+        remote_deleted = self.composite_and_reference_snapshot()
+        remote_deleted["referenced_variables"][1]["remote"] = True
+        cases.append(("deleted flag", remote_deleted, "remote: must be false for deleted_local"))
+        live_collection = self.composite_and_reference_snapshot()
+        live_collection["referenced_variables"][1]["collection_id"] = "Collection:semantic"
+        cases.append(("deleted in live collection", live_collection, "deleted_local cannot belong to an observed collection"))
+        bad_origin = self.composite_and_reference_snapshot()
+        bad_origin["referenced_variables"][0]["origin"] = "published"
+        cases.append(("unknown origin", bad_origin, "origin: expected one of"))
+        unknown = self.composite_and_reference_snapshot()
+        unknown["referenced_variables"] = []
+        cases.append(("unlisted referenced usage", unknown, "variable_id: unknown variable"))
+        for name, artifact, expected in cases:
+            with self.subTest(case=name):
+                errors = SNAPSHOT_VALIDATOR.validate(artifact)
+                self.assertTrue(any(expected in error for error in errors), f"Expected {expected!r}; received {errors!r}")
+
     def test_mode_ids_are_scoped_to_their_collection(self) -> None:
         artifact = copy.deepcopy(self.snapshots[0])
         artifact["collections"].append({

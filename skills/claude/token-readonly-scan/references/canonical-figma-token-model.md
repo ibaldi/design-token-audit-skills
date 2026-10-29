@@ -6,7 +6,7 @@ Normalize all supported Figma read paths into this model before applying audit r
 
 ```json
 {
-  "schema_version": "1.0.0",
+  "schema_version": "1.1.0",
   "snapshot_type": "figma_token_snapshot",
   "snapshot_id": "dts-20260811T173000Z-abc123",
   "captured_at": "2026-08-11T17:30:00Z",
@@ -17,10 +17,13 @@ Normalize all supported Figma read paths into this model before applying audit r
   "variables": [],
   "pages": [],
   "usages": [],
+  "referenced_variables": [],
   "document_evidence": [],
   "warnings": []
 }
 ```
+
+Snapshot schema `1.1.0` adds the `composite` mode-value kind and the optional `referenced_variables` array. A `1.0.0` snapshot remains valid when it uses neither; validators reject either feature in a `1.0.0` snapshot.
 
 Use UTC ISO-8601 timestamps with `Z` or `+00:00`. IDs are opaque strings and must never be parsed for business meaning.
 
@@ -131,6 +134,27 @@ Use these normalized mode-value variants:
 
 Preserve `target_variable_id` when the unavailable value is a known remote alias target. The field is optional when no target identity is observable.
 
+A COLOR mode value may combine a color and a separate opacity, each of which may be an alias. Figma exposes this as an object with `color` and `opacity` instead of an RGBA literal or a single `VARIABLE_ALIAS`. Normalize it as a composite and preserve both components exactly:
+
+```json
+{
+  "kind": "composite",
+  "components": {
+    "color": {"kind": "alias", "target_variable_id": "VariableID:763:191"},
+    "opacity": {"kind": "alias", "target_variable_id": "VariableID:1123:263"}
+  }
+}
+```
+
+Rules for `composite`:
+
+- It is allowed only for `COLOR` variables and requires snapshot schema `1.1.0`.
+- `components` contains exactly `color` and `opacity`.
+- Each component is a `literal`, an `alias`, or a `not_observable` value with the same shape as a top-level mode value. A `color` literal is an RGBA object; an `opacity` literal is a number.
+- Preserve the opacity scale reported by the read path. Figma `COLOR_OPACITY` values are commonly stored on a 0–100 scale; do not rescale them during normalization.
+- Each component alias is a local alias edge. Count it for local inbound aliases and resolve it with the same integrity rules as a top-level alias.
+- Never collapse a composite into a single alias or a computed RGBA literal.
+
 Preserve literal types exactly: Boolean, number, string, or RGBA object with `r`, `g`, `b`, and `a` values from 0 through 1. Do not convert colors into hex strings or resolve aliases into copied literals.
 
 ## Pages
@@ -163,6 +187,34 @@ Represent each observed binding as a separate record:
 ```
 
 Absence from `usages` proves no usage only when every requested page has complete traversal and `read_bound_variables` is available.
+
+A usage `variable_id` must reference either a captured local variable or a `referenced_variables` record.
+
+## Referenced Variables
+
+Nodes can bind variables that are not part of the local inventory. Record each such variable once as a reference so that its usages remain valid evidence:
+
+```json
+{
+  "id": "VariableID:00b6817e1da2aec897517f2bf8bec45634be3c54/514:628",
+  "origin": "remote_library",
+  "name": "spacing/xs",
+  "key": "00b6817e1da2aec897517f2bf8bec45634be3c54",
+  "resolved_type": "FLOAT",
+  "remote": true,
+  "collection_id": null,
+  "provenance": {"adapter_id": "figma-plugin-api", "source_path": "getVariableByIdAsync for bound variable"}
+}
+```
+
+Allowed `origin` values:
+
+- `remote_library`: the variable belongs to a subscribed library. `remote` must be `true`.
+- `deleted_local`: the variable is local to the file (`remote: false`) but is no longer returned by the local variable inventory, typically because it or its collection was deleted while a node binding remained. Preserve the last observable `collection_id` when exposed.
+
+Required fields: `id`, `origin`, `name`, `key`, `resolved_type`, `remote`, `collection_id`, and `provenance`. Use `null` for `name`, `key`, `resolved_type`, or `collection_id` when the lookup does not expose them. An ID cannot appear both as a local variable and as a reference. A `deleted_local` reference cannot point to an observed local collection.
+
+References are usage evidence only. They are not part of the local inventory, do not count toward collection or variable totals, and are never valid targets for value, scope, or creation writes in this suite. A `remote_library` binding stays outside local orphan and coverage evidence; a library-aware workflow is required before it can become a binding target. A `deleted_local` binding is an integrity observation: the node still resolves through a variable that the file no longer manages. Report it as a `usage` finding; any rebind or unbind must go through the separately approved `token-binding-fix` workflow.
 
 ## Document Evidence
 
@@ -209,7 +261,8 @@ Before audit evaluation, verify:
 - every collection `variable_id` resolves to the same collection
 - every `values_by_mode` key belongs to the variable's collection
 - every local alias target resolves or is explicitly classified as remote/unobservable
-- usage records reference observed variables and pages when those inventories are complete
+- usage records reference observed local variables or referenced variables, and observed pages when those inventories are complete
+- composite component aliases resolve like top-level aliases
 
 A failed core integrity check makes the snapshot invalid. Do not run token-quality rules on an invalid snapshot.
 
@@ -227,6 +280,6 @@ Compare two or more adapter snapshots of the same source with:
 python3 scripts/validate_snapshot.py --compare <snapshot-a.json> <snapshot-b.json>
 ```
 
-Comparison ignores adapter metadata, provenance, optional page usage, timestamps, and snapshot IDs. It requires equivalent source identity, collections, ordered modes, variables, descriptions, scopes, literals, and alias semantics.
+Comparison ignores adapter metadata, provenance, optional page usage, referenced variables, timestamps, snapshot IDs, and the snapshot schema minor version. It requires equivalent source identity, collections, ordered modes, variables, descriptions, scopes, literals, and alias semantics, including composite components.
 
 Semantic comparison resolves mode IDs inside their owning collection. Because adapter-independent comparison cannot disambiguate duplicate semantic names without shared stable IDs, comparison is blocked when collection names repeat or variable names repeat within one collection. The individual snapshots remain valid and duplicate names can still be reported as audit findings.

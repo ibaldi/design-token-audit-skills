@@ -129,6 +129,7 @@ def main() -> int:
     variables: dict[str, Any] = {}
     pages: dict[str, Any] = {}
     usages: dict[tuple[str, str, str, str], Any] = {}
+    referenced_variables: dict[str, Any] = {}
     observations: list[dict[str, Any]] = []
     expected_collection_ids: set[str] = set()
     completed_collection_ids: set[str] = set()
@@ -194,6 +195,10 @@ def main() -> int:
                         observation = dict(raw_observation)
                         observation["provenance"] = provenance(source_path, captured_at)
                         observations.append(observation)
+            for raw in chunk.get("referenced_variables", []):
+                record = dict(raw)
+                record["provenance"] = provenance(source_path, captured_at)
+                merge_unique(referenced_variables, record, str(path), errors)
 
     if len(adapter_versions) != 1:
         errors.append("collector chunks must use exactly one adapter version")
@@ -224,7 +229,7 @@ def main() -> int:
 
     captured_times = sorted(chunk.get("captured_at") for _, chunk in chunks if isinstance(chunk.get("captured_at"), str))
     snapshot = {
-        "schema_version": "1.0.0",
+        "schema_version": "1.1.0",
         "snapshot_type": "figma_token_snapshot",
         "snapshot_id": args.snapshot_id or f"dts-{datetime.now(timezone.utc).strftime('%Y%m%dT%H%M%SZ')}",
         "captured_at": captured_times[-1] if captured_times else utc_now(),
@@ -253,6 +258,7 @@ def main() -> int:
         "variables": sorted(variables.values(), key=lambda item: item["id"]),
         "pages": sorted(pages.values(), key=lambda item: item["id"]),
         "usages": sorted(usages.values(), key=lambda item: (item["page_id"], item["node_id"], item["binding_path"], item["variable_id"])),
+        "referenced_variables": sorted(referenced_variables.values(), key=lambda item: item["id"]),
         "document_evidence": [],
         "warnings": warnings,
     }

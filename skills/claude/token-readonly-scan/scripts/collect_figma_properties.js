@@ -167,6 +167,30 @@ if (CONFIG.mode === "page_inventory") {
     pages: pages.map((page) => ({ id: page.id, name: page.name }))
   });
 }
+async function referencedVariables(results) {
+  const localIds = new Set((await figma.variables.getLocalVariablesAsync()).map((variable) => variable.id));
+  const references = [];
+  const seen = new Set();
+  for (const page of results) {
+    for (const usage of page.usages) {
+      if (seen.has(usage.variable_id) || localIds.has(usage.variable_id)) continue;
+      seen.add(usage.variable_id);
+      const variable = await figma.variables.getVariableByIdAsync(usage.variable_id);
+      if (!variable) continue;
+      references.push({
+        id: variable.id,
+        origin: variable.remote ? "remote_library" : "deleted_local",
+        name: variable.name || null,
+        key: variable.key || null,
+        resolved_type: variable.resolvedType || null,
+        remote: !!variable.remote,
+        collection_id: variable.remote ? null : (variable.variableCollectionId || null)
+      });
+    }
+  }
+  return references;
+}
+
 if (CONFIG.mode === "pages") {
   const selected = CONFIG.pageIds.length ? pages.filter((page) => CONFIG.pageIds.includes(page.id)) : pages;
   const results = [];
@@ -181,7 +205,8 @@ if (CONFIG.mode === "pages") {
     operation: "pages",
     requested_page_ids: selected.map((page) => page.id),
     completed_page_ids: results.filter((page) => page.traversal_status === "complete").map((page) => page.id),
-    pages: results
+    pages: results,
+    referenced_variables: await referencedVariables(results)
   });
 }
 return Object.assign(base, { error: `Unsupported CONFIG.mode: ${CONFIG.mode}` });

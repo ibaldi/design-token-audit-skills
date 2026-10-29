@@ -74,6 +74,67 @@ class SnapshotToolTests(unittest.TestCase):
             audit_validated = subprocess.run([sys.executable, str(SCAN / "scripts" / "validate_audit_json.py"), str(audit_path)], capture_output=True, text=True)
             self.assertEqual(audit_validated.returncode, 0, audit_validated.stderr)
 
+    def test_assembler_accepts_composite_values_and_referenced_usages(self) -> None:
+        base = {
+            "chunk_version": "1.0.0", "adapter_id": "figma-console-plugin-api", "adapter_version": "0.9.0",
+            "captured_at": "2026-10-29T09:30:00Z", "source": {"file_key": "fixture-file", "file_name": "Fixture Library"},
+        }
+        collection = {
+            "id": "Collection:1", "name": "System", "default_mode_id": "Mode:1",
+            "modes": [{"id": "Mode:1", "name": "default", "position": 0}],
+            "variable_ids": ["Variable:color", "Variable:opacity", "Variable:overlay"],
+            "remote": False, "hidden_from_publishing": False,
+        }
+        def variable(variable_id, name, resolved_type, value):
+            return {
+                "id": variable_id, "name": name, "collection_id": "Collection:1", "resolved_type": resolved_type,
+                "description": "", "scopes": [], "remote": False, "hidden_from_publishing": False, "code_syntax": {},
+                "values_by_mode": {"Mode:1": value},
+            }
+        variables = [
+            variable("Variable:color", "color/base", "COLOR", {"kind": "literal", "value": {"r": 0, "g": 0, "b": 0, "a": 1}}),
+            variable("Variable:opacity", "opacity/15", "FLOAT", {"kind": "literal", "value": 15}),
+            variable("Variable:overlay", "color/overlay/hover", "COLOR", {"kind": "composite", "components": {
+                "color": {"kind": "alias", "target_variable_id": "Variable:color"},
+                "opacity": {"kind": "alias", "target_variable_id": "Variable:opacity"},
+            }}),
+        ]
+        remote_id = "VariableID:library/514:628"
+        chunks = [
+            dict(base, chunk_type="figma_token_variables", operation="inventory", complete=True, collections=[collection]),
+            dict(base, chunk_type="figma_token_variables", operation="variables", requested_collection_ids=["Collection:1"], completed_collection_ids=["Collection:1"], truncated=False, variables=variables),
+            dict(base, chunk_type="figma_token_properties", operation="page_inventory", complete=True, pages=[{"id": "Page:1", "name": "Playground"}]),
+            dict(base, chunk_type="figma_token_properties", operation="pages", requested_page_ids=["Page:1"], completed_page_ids=["Page:1"], pages=[{
+                "id": "Page:1", "name": "Playground", "traversal_status": "complete", "node_count": 2,
+                "usages": [
+                    {"variable_id": remote_id, "node_id": "Node:1", "page_id": "Page:1", "binding_path": "paddingTop", "binding_kind": "bound_variable"},
+                    {"variable_id": "Variable:overlay", "node_id": "Node:2", "page_id": "Page:1", "binding_path": "fills[0].color", "binding_kind": "bound_variable"},
+                ],
+                "observations": [], "limitations": [],
+            }], referenced_variables=[{"id": remote_id, "origin": "remote_library", "name": "spacing/xs", "key": "library", "resolved_type": "FLOAT", "remote": True, "collection_id": None}]),
+        ]
+        with tempfile.TemporaryDirectory() as temporary:
+            directory = Path(temporary)
+            paths = []
+            for index, chunk in enumerate(chunks):
+                path = directory / f"chunk-{index}.json"
+                write(path, chunk)
+                paths.append(path)
+            output = directory / "snapshot.json"
+            result = subprocess.run([sys.executable, str(ASSEMBLER), *map(str, paths), "--out", str(output)], capture_output=True, text=True)
+            self.assertEqual(result.returncode, 0, result.stderr)
+            snapshot = read(output)
+            self.assertEqual(snapshot["schema_version"], "1.1.0")
+            self.assertEqual([item["id"] for item in snapshot["referenced_variables"]], [remote_id])
+            self.assertEqual(len(snapshot["variables"]), 3)
+            self.assertEqual(snapshot["coverage"]["variables"]["captured"], 3)
+
+            chunks[3].pop("referenced_variables")
+            write(paths[3], chunks[3])
+            missing = subprocess.run([sys.executable, str(ASSEMBLER), *map(str, paths), "--out", str(directory / "missing.json")], capture_output=True, text=True)
+            self.assertEqual(missing.returncode, 1)
+            self.assertIn("variable_id: unknown variable", missing.stderr)
+
     def test_diff_expectation_is_value_exact(self) -> None:
         before = read(FIXTURE)
         after = copy.deepcopy(before)

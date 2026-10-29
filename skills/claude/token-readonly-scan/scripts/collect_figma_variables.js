@@ -30,6 +30,16 @@ async function normalizeValue(value) {
       value: { r: value.r, g: value.g, b: value.b, a: "a" in value ? value.a : 1 }
     };
   }
+  if (value && typeof value === "object" && "color" in value && "opacity" in value) {
+    // COLOR value that combines a color and a separate opacity, each possibly an alias.
+    return {
+      kind: "composite",
+      components: {
+        color: await normalizeValue(value.color),
+        opacity: await normalizeValue(value.opacity)
+      }
+    };
+  }
   return { kind: "literal", value };
 }
 

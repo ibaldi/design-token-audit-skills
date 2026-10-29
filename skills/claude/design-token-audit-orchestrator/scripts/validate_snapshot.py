@@ -14,7 +14,11 @@ from typing import Any
 COVERAGE_STATUSES = {"complete", "partial", "not_observable", "not_configured", "failed"}
 SOURCE_TYPES = {"plugin_api", "mcp", "api", "export", "mixed"}
 CAPABILITY_STATUSES = {"available", "partial", "unavailable", "unknown", "failed"}
-VALUE_KINDS = {"literal", "alias", "missing", "not_observable"}
+SCHEMA_VERSIONS = {"1.0.0", "1.1.0"}
+VALUE_KINDS = {"literal", "alias", "missing", "not_observable", "composite"}
+COMPONENT_KINDS = {"literal", "alias", "not_observable"}
+COMPOSITE_COMPONENTS = {"COLOR": {"color": "COLOR", "opacity": "FLOAT"}}
+REFERENCE_ORIGINS = {"remote_library", "deleted_local"}
 PAGE_STATUSES = {"complete", "partial", "not_observable", "failed"}
 EVIDENCE_TYPES = {"changelog", "reference", "other"}
 VARIABLE_TYPES = {"BOOLEAN", "COLOR", "FLOAT", "STRING"}
@@ -120,13 +124,52 @@ def validate_literal(value: Any, resolved_type: Any, path: str, errors: list[str
                     errors.append(f"{path}.{channel}: expected number from 0 to 1")
 
 
+def validate_mode_value(value: Any, resolved_type: Any, path: str, errors: list[str],
+                        alias_targets: list[tuple[str, str]], allowed_kinds: set[str], schema_version: Any) -> None:
+    required(value, {"kind"}, path, errors)
+    if not obj(value):
+        return
+    kind = value.get("kind")
+    enum(kind, allowed_kinds, f"{path}.kind", errors)
+    if kind == "literal" and "value" not in value:
+        errors.append(f"{path}.value: missing literal value")
+    elif kind == "literal":
+        validate_literal(value.get("value"), resolved_type, f"{path}.value", errors)
+    if kind == "alias":
+        nonempty(value.get("target_variable_id"), f"{path}.target_variable_id", errors)
+        if isinstance(value.get("target_variable_id"), str):
+            alias_targets.append((path, value["target_variable_id"]))
+    if kind == "not_observable":
+        nonempty(value.get("reason"), f"{path}.reason", errors)
+        if value.get("target_variable_id") is not None:
+            nonempty(value.get("target_variable_id"), f"{path}.target_variable_id", errors)
+    if kind == "composite":
+        if schema_version == "1.0.0":
+            errors.append(f"{path}.kind: composite values require schema_version 1.1.0")
+        expected = COMPOSITE_COMPONENTS.get(resolved_type)
+        if expected is None:
+            errors.append(f"{path}.kind: composite values are allowed only for {sorted(COMPOSITE_COMPONENTS)} variables")
+            return
+        components = value.get("components")
+        if not obj(components):
+            errors.append(f"{path}.components: expected object")
+            return
+        if set(components) != set(expected):
+            errors.append(f"{path}.components: keys must be exactly {sorted(expected)}")
+        for name, component_type in expected.items():
+            if name in components:
+                validate_mode_value(components[name], component_type, f"{path}.components.{name}", errors,
+                                    alias_targets, COMPONENT_KINDS, schema_version)
+
+
 def validate(data: Any) -> list[str]:
     errors: list[str] = []
     required(data, TOP_FIELDS, "$", errors)
     if not obj(data):
         return errors
-    if data.get("schema_version") != "1.0.0":
-        errors.append("schema_version: expected '1.0.0'")
+    schema_version = data.get("schema_version")
+    if schema_version not in SCHEMA_VERSIONS:
+        errors.append(f"schema_version: expected one of {sorted(SCHEMA_VERSIONS)}")
     if data.get("snapshot_type") != "figma_token_snapshot":
         errors.append("snapshot_type: expected 'figma_token_snapshot'")
     nonempty(data.get("snapshot_id"), "snapshot_id", errors)
@@ -291,24 +334,8 @@ def validate(data: Any) -> list[str]:
             if set(values) != allowed_modes:
                 errors.append(f"{path}.values_by_mode: keys must exactly match collection modes")
             for mode_id, value in values.items():
-                value_path = f"{path}.values_by_mode.{mode_id}"
-                required(value, {"kind"}, value_path, errors)
-                if not obj(value):
-                    continue
-                kind = value.get("kind")
-                enum(kind, VALUE_KINDS, f"{value_path}.kind", errors)
-                if kind == "literal" and "value" not in value:
-                    errors.append(f"{value_path}.value: missing literal value")
-                elif kind == "literal":
-                    validate_literal(value.get("value"), variable.get("resolved_type"), f"{value_path}.value", errors)
-                if kind == "alias":
-                    nonempty(value.get("target_variable_id"), f"{value_path}.target_variable_id", errors)
-                    if isinstance(value.get("target_variable_id"), str):
-                        alias_targets.append((value_path, value["target_variable_id"]))
-                if kind == "not_observable":
-                    nonempty(value.get("reason"), f"{value_path}.reason", errors)
-                    if value.get("target_variable_id") is not None:
-                        nonempty(value.get("target_variable_id"), f"{value_path}.target_variable_id", errors)
+                validate_mode_value(value, variable.get("resolved_type"), f"{path}.values_by_mode.{mode_id}",
+                                    errors, alias_targets, VALUE_KINDS, schema_version)
         provenance(variable.get("provenance"), f"{path}.provenance", adapter_id, source_type, errors)
 
     for path, target in alias_targets:
@@ -317,6 +344,41 @@ def validate(data: Any) -> list[str]:
     for declared_id in declared_variables:
         if declared_id not in variable_ids:
             errors.append(f"collections.variable_ids: unknown variable {declared_id!r}")
+
+    referenced_variable_ids: set[str] = set()
+    if "referenced_variables" in data:
+        references = data.get("referenced_variables")
+        if schema_version == "1.0.0":
+            errors.append("referenced_variables: requires schema_version 1.1.0")
+        if array(references, "referenced_variables", errors):
+            for index, reference in enumerate(references):
+                path = f"referenced_variables[{index}]"
+                required(reference, {"id", "origin", "name", "key", "resolved_type", "remote", "collection_id", "provenance"}, path, errors)
+                if not obj(reference):
+                    continue
+                rid = reference.get("id")
+                nonempty(rid, f"{path}.id", errors)
+                origin = reference.get("origin")
+                enum(origin, REFERENCE_ORIGINS, f"{path}.origin", errors)
+                for key in ("name", "key", "collection_id"):
+                    if reference.get(key) is not None:
+                        nonempty(reference.get(key), f"{path}.{key}", errors)
+                if reference.get("resolved_type") is not None:
+                    enum(reference.get("resolved_type"), VARIABLE_TYPES, f"{path}.resolved_type", errors)
+                if origin == "remote_library" and reference.get("remote") is not True:
+                    errors.append(f"{path}.remote: must be true for remote_library")
+                if origin == "deleted_local":
+                    if reference.get("remote") is not False:
+                        errors.append(f"{path}.remote: must be false for deleted_local")
+                    if reference.get("collection_id") in collection_ids:
+                        errors.append(f"{path}.collection_id: deleted_local cannot belong to an observed collection")
+                if rid in variable_ids:
+                    errors.append(f"{path}.id: already captured as a local variable")
+                if rid in referenced_variable_ids:
+                    errors.append(f"{path}.id: duplicate referenced variable ID")
+                if isinstance(rid, str):
+                    referenced_variable_ids.add(rid)
+                provenance(reference.get("provenance"), f"{path}.provenance", adapter_id, source_type, errors)
 
     page_ids: set[str] = set()
     for index, page in enumerate(pages):
@@ -339,7 +401,7 @@ def validate(data: Any) -> list[str]:
         if obj(usage):
             for key in ("variable_id", "node_id", "page_id", "binding_path", "binding_kind"):
                 nonempty(usage.get(key), f"{path}.{key}", errors)
-            if usage.get("variable_id") not in variable_ids:
+            if usage.get("variable_id") not in variable_ids | referenced_variable_ids:
                 errors.append(f"{path}.variable_id: unknown variable")
             pages_complete = obj(coverage) and obj(coverage.get("pages")) and coverage["pages"].get("status") == "complete"
             if pages_complete and usage.get("page_id") not in page_ids:
@@ -400,12 +462,17 @@ def semantic_projection(data: dict[str, Any]) -> dict[str, Any]:
     for item in data["variables"]:
         collection = next(collection for collection in data["collections"] if collection["id"] == item["collection_id"])
         local_mode_names = {mode["id"]: mode["name"] for mode in collection["modes"]}
-        values: dict[str, Any] = {}
-        for mode_id, value in item["values_by_mode"].items():
+        def normalize(value: dict[str, Any]) -> dict[str, Any]:
             normalized = dict(value)
             if normalized.get("kind") == "alias":
                 normalized["target_variable"] = variable_names[normalized.pop("target_variable_id")]
-            values[local_mode_names[mode_id]] = normalized
+            if normalized.get("kind") == "composite":
+                normalized["components"] = {name: normalize(component) for name, component in normalized["components"].items()}
+            return normalized
+
+        values: dict[str, Any] = {}
+        for mode_id, value in item["values_by_mode"].items():
+            values[local_mode_names[mode_id]] = normalize(value)
         variables.append({
             "name": item["name"],
             "collection": collection_names[item["collection_id"]],

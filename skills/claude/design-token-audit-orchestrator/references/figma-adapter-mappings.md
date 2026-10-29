@@ -19,9 +19,10 @@ Use asynchronous APIs where available.
 | code syntax | variable `codeSyntax` when exposed |
 | page identity | page node `id` and `name` |
 | bound usage | node `boundVariables` and supported bound-variable fields |
+| referenced variable | `figma.variables.getVariableByIdAsync(id)` for a bound ID outside the local inventory: `remote_library` when `remote` is true, otherwise `deleted_local` |
 | document text | text node `characters` after font-safe read access |
 
-Normalize `VARIABLE_ALIAS` as `{"kind":"alias","target_variable_id":"..."}`. Normalize a missing collection mode key as `{"kind":"missing"}`. Do not resolve an alias by replacing it with its terminal literal.
+Normalize `VARIABLE_ALIAS` as `{"kind":"alias","target_variable_id":"..."}`. Normalize a COLOR mode value of the form `{color, opacity}` as `{"kind":"composite","components":{"color":...,"opacity":...}}`, normalizing each component like a top-level value. Normalize a missing collection mode key as `{"kind":"missing"}`. Do not resolve an alias by replacing it with its terminal literal.
 
 Plugin API access is scoped to the current file. Set external-consumer capabilities to `unavailable` unless a separate verified source is combined.
 

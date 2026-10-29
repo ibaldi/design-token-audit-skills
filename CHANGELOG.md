@@ -2,6 +2,12 @@
 
 ## Unreleased
 
+- Updated the canonical `figma_token_snapshot` to `1.1.0`; validators still accept `1.0.0` snapshots that use neither new feature.
+- Added the `composite` mode-value kind for COLOR variables that combine a color and a separate opacity, each preserved as a literal or alias, with component alias integrity checks and semantic comparison.
+- Added `referenced_variables` so node bindings outside the local inventory remain valid usage evidence: `remote_library` for subscribed-library variables and `deleted_local` for local variables the inventory no longer returns.
+- Kept referenced variables out of inventory totals, orphan evidence, and every write target; `deleted_local` bindings are reported as usage findings and routed through `token-binding-fix`.
+- Updated the variable and page collectors and the assembler to emit both features, and added validator and assembler regressions.
+
 ## 0.9.0 - 2026-10-28
 
 - Added Figma-native companion skill `0.1.0` as one uploadable Markdown file derived from Claude suite `0.9.0` while preventing claims of machine-validated JSON or technical equivalence with the multi-file suite.

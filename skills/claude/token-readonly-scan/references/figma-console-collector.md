@@ -8,7 +8,7 @@ Use this path only when the connected Figma execution environment exposes the Pl
 
 - `scripts/collect_figma_variables.js` collects the complete collection inventory and chunked variable records.
 - `scripts/collect_figma_properties.js` collects the page inventory, exact binding usages, and property observations required for Audit `1.5.0` traversal evidence.
-- `scripts/assemble_snapshot.py` merges chunks into `figma_token_snapshot` `1.0.0` and can write a property-observation sidecar.
+- `scripts/assemble_snapshot.py` merges chunks into `figma_token_snapshot` `1.1.0` and can write a property-observation sidecar.
 - `scripts/diff_snapshots.py` performs pre-write drift checks and exact post-write verification.
 
 All JavaScript collectors are read-only. Do not add Figma mutation APIs to them.
@@ -21,6 +21,8 @@ All JavaScript collectors are read-only. Do not add Figma mutation APIs to them.
 4. When node usage, bindings, hardcoded values, or semantic gaps matter, run the property collector once with `mode: "page_inventory"`.
 5. Run it with `mode: "pages"` in bounded page chunks. Every page from the inventory must complete before page, usage, or property coverage can be complete.
 6. Save each returned JSON object unchanged. Never edit counts or completion markers manually.
+
+The variable collector normalizes a COLOR mode value that combines a color and an opacity as a `composite` value. The page collector looks up every bound variable ID outside the local inventory once and records it in `referenced_variables` as `remote_library` or `deleted_local`, so these usages remain valid evidence without entering the local inventory.
 
 If a read call times out, rerunning the same read-only chunk is safe. Deduplicate only by stable IDs and reject conflicting duplicate records.
 

@@ -59,6 +59,7 @@ For each mode value, preserve whether it is:
 
 - a literal
 - a `VARIABLE_ALIAS`, including the target variable ID
+- a composite COLOR value with separate `color` and `opacity` components, each preserved as a literal or alias
 - missing
 - unresolvable with the available access
 
@@ -83,7 +84,7 @@ Do not label a value suspicious only because it is zero. Report a suspicious AX/
 
 ## 6. Resolve Alias Evidence
 
-For every `VARIABLE_ALIAS` value:
+For every `VARIABLE_ALIAS` value, including each alias component of a composite value:
 
 1. Record source variable ID, source mode ID, and target variable ID.
 2. Resolve the target with the available variable lookup.
@@ -113,7 +114,7 @@ Classify possible orphan evidence as:
 
 Only use `potential orphan candidate` when the evidence scope is stated. Never recommend deletion from local evidence alone.
 
-When node traversal is supported, inspect the declared pages and record bound variable references exposed on nodes. Report which pages were fully traversed. If traversal is partial or unsupported, do not claim absence of node usage.
+When node traversal is supported, inspect the declared pages and record bound variable references exposed on nodes. Record bound variables outside the local inventory as referenced variables: `remote_library` for subscribed-library variables and `deleted_local` for local variables that the inventory no longer returns. Never add them to the local inventory or treat them as local orphan evidence. Report which pages were fully traversed. If traversal is partial or unsupported, do not claim absence of node usage.
 
 ## 8. Inspect Changelog And Reference Evidence
 
